@@ -1,0 +1,42 @@
+{
+  "app": {
+    "name": "AI翻译游戏开发工具",
+    "version": "1.0.0",
+    "language": "zh_CN",
+    "theme": "default",
+    "author": "鹏砚 (Drinkwang)",
+    "homepage": "https://space.bilibili.com/13061595",
+    "repository": "https://github.com/Drinkwang",
+    "development": "人机协作 (与Claude AI共同开发)",
+    "license": "MIT"
+  },
+  "ui": {
+    "window_size": {
+      "width": 1200,
+      "height": 800
+    },
+    "min_window_size": {
+      "width": 800,
+      "height": 600
+    },
+    "auto_save": true,
+    "auto_save_interval": 300
+  },
+  "translation": {
+    "source_language": "en",
+    "target_language": "zh",
+    "batch_size": 10,
+    "enable_cache": true,
+    "preserve_formatting": true
+  },
+  "file_handling": {
+    "supported_formats": [".txt", ".json", ".csv", ".gd", ".cs", ".lua"],
+    "max_file_size": 10485760,
+    "backup_on_translate": true
+  },
+  "logging": {
+    "level": "INFO",
+    "max_log_size": 5242880,
+    "max_log_files": 5
+  }
+} 

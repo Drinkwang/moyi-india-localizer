@@ -1,0 +1,560 @@
+[gd_scene load_steps=2 format=3 uid="uid://bmpitbxspjeyw"]
+
+[ext_resource type="Script" path="res://scenes/main/main.gd" id="1_1xk5l"]
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_1xk5l")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "AI翻译游戏开发工具"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="SettingsContainer" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="ModeContainer" type="HBoxContainer" parent="VBoxContainer/SettingsContainer"]
+layout_mode = 2
+
+[node name="ModeLabel" type="Label" parent="VBoxContainer/SettingsContainer/ModeContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "翻译模式:"
+
+[node name="ModeOption" type="OptionButton" parent="VBoxContainer/SettingsContainer/ModeContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ServiceConfigButton" type="Button" parent="VBoxContainer/SettingsContainer/ModeContainer"]
+layout_mode = 2
+text = "配置AI服务"
+
+[node name="LanguageConfigButton" type="Button" parent="VBoxContainer/SettingsContainer/ModeContainer"]
+layout_mode = 2
+text = "语言配置"
+
+[node name="BasicSettingsContainer" type="HBoxContainer" parent="VBoxContainer/SettingsContainer"]
+layout_mode = 2
+
+[node name="LanguageContainer" type="VBoxContainer" parent="VBoxContainer/SettingsContainer/BasicSettingsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SourceLanguageLabel" type="Label" parent="VBoxContainer/SettingsContainer/BasicSettingsContainer/LanguageContainer"]
+layout_mode = 2
+text = "源语言:"
+
+[node name="LanguageOptionSource" type="OptionButton" parent="VBoxContainer/SettingsContainer/BasicSettingsContainer/LanguageContainer"]
+layout_mode = 2
+
+[node name="TargetLanguageLabel" type="Label" parent="VBoxContainer/SettingsContainer/BasicSettingsContainer/LanguageContainer"]
+layout_mode = 2
+text = "目标语言:"
+
+[node name="LanguageOptionTarget" type="OptionButton" parent="VBoxContainer/SettingsContainer/BasicSettingsContainer/LanguageContainer"]
+layout_mode = 2
+
+[node name="ServiceContainer" type="VBoxContainer" parent="VBoxContainer/SettingsContainer/BasicSettingsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ServiceLabel" type="Label" parent="VBoxContainer/SettingsContainer/BasicSettingsContainer/ServiceContainer"]
+layout_mode = 2
+text = "翻译服务:"
+
+[node name="ServiceOption" type="OptionButton" parent="VBoxContainer/SettingsContainer/BasicSettingsContainer/ServiceContainer"]
+layout_mode = 2
+
+[node name="GodotSettingsContainer" type="VBoxContainer" parent="VBoxContainer/SettingsContainer"]
+visible = false
+layout_mode = 2
+
+[node name="FileContainer" type="HBoxContainer" parent="VBoxContainer/SettingsContainer/GodotSettingsContainer"]
+layout_mode = 2
+
+[node name="FileLabel" type="Label" parent="VBoxContainer/SettingsContainer/GodotSettingsContainer/FileContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "CSV文件:"
+
+[node name="FileButton" type="Button" parent="VBoxContainer/SettingsContainer/GodotSettingsContainer/FileContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "选择文件"
+
+[node name="LanguageInputContainer" type="VBoxContainer" parent="VBoxContainer/SettingsContainer/GodotSettingsContainer"]
+layout_mode = 2
+
+[node name="SourceLangLabel" type="Label" parent="VBoxContainer/SettingsContainer/GodotSettingsContainer/LanguageInputContainer"]
+layout_mode = 2
+text = "源语言代码 (如: en):"
+
+[node name="SourceLangInput" type="LineEdit" parent="VBoxContainer/SettingsContainer/GodotSettingsContainer/LanguageInputContainer"]
+layout_mode = 2
+placeholder_text = "zh"
+
+[node name="TargetLangsLabel" type="Label" parent="VBoxContainer/SettingsContainer/GodotSettingsContainer/LanguageInputContainer"]
+layout_mode = 2
+text = "目标语言代码 (用逗号分隔，如: zh,ja,ru):"
+
+[node name="TargetLangsInput" type="LineEdit" parent="VBoxContainer/SettingsContainer/GodotSettingsContainer/LanguageInputContainer"]
+layout_mode = 2
+placeholder_text = "en,ja,ru,lzh"
+
+[node name="ServiceContainer" type="HBoxContainer" parent="VBoxContainer/SettingsContainer/GodotSettingsContainer"]
+layout_mode = 2
+
+[node name="ServiceLabel" type="Label" parent="VBoxContainer/SettingsContainer/GodotSettingsContainer/ServiceContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "翻译服务:"
+
+[node name="ServiceOptionCSV" type="OptionButton" parent="VBoxContainer/SettingsContainer/GodotSettingsContainer/ServiceContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="OutputContainer" type="HBoxContainer" parent="VBoxContainer/SettingsContainer/GodotSettingsContainer"]
+layout_mode = 2
+
+[node name="OutputLabel" type="Label" parent="VBoxContainer/SettingsContainer/GodotSettingsContainer/OutputContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "输出文件:"
+
+[node name="OutputPathLabel" type="Label" parent="VBoxContainer/SettingsContainer/GodotSettingsContainer/OutputContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "请先选择输入文件"
+horizontal_alignment = 2
+
+[node name="SaveAsButton" type="Button" parent="VBoxContainer/SettingsContainer/GodotSettingsContainer/OutputContainer"]
+layout_mode = 2
+text = "另存为..."
+
+[node name="TranslationContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SourceContainer" type="VBoxContainer" parent="VBoxContainer/TranslationContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SourceLabel" type="Label" parent="VBoxContainer/TranslationContainer/SourceContainer"]
+layout_mode = 2
+text = "原文:"
+
+[node name="SourceTextEdit" type="TextEdit" parent="VBoxContainer/TranslationContainer/SourceContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+placeholder_text = "请输入要翻译的文本..."
+
+[node name="TargetContainer" type="VBoxContainer" parent="VBoxContainer/TranslationContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TargetLabel" type="Label" parent="VBoxContainer/TranslationContainer/TargetContainer"]
+layout_mode = 2
+text = "译文:"
+
+[node name="TargetTextEdit" type="TextEdit" parent="VBoxContainer/TranslationContainer/TargetContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+placeholder_text = "翻译结果将显示在这里..."
+editable = false
+
+[node name="ControlsContainer" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="ButtonsContainer" type="HBoxContainer" parent="VBoxContainer/ControlsContainer"]
+layout_mode = 2
+
+[node name="TranslateButton" type="Button" parent="VBoxContainer/ControlsContainer/ButtonsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "翻译"
+
+[node name="PauseButton" type="Button" parent="VBoxContainer/ControlsContainer/ButtonsContainer"]
+layout_mode = 2
+disabled = true
+text = "暂停"
+
+[node name="ResumeButton" type="Button" parent="VBoxContainer/ControlsContainer/ButtonsContainer"]
+layout_mode = 2
+disabled = true
+text = "恢复"
+
+[node name="CancelButton" type="Button" parent="VBoxContainer/ControlsContainer/ButtonsContainer"]
+layout_mode = 2
+disabled = true
+text = "取消"
+
+[node name="ProgressContainer" type="VBoxContainer" parent="VBoxContainer/ControlsContainer"]
+layout_mode = 2
+
+[node name="ProgressBar" type="ProgressBar" parent="VBoxContainer/ControlsContainer/ProgressContainer"]
+layout_mode = 2
+
+[node name="ProgressLabel" type="Label" parent="VBoxContainer/ControlsContainer/ProgressContainer"]
+layout_mode = 2
+text = "进度: 就绪"
+horizontal_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="VBoxContainer/ControlsContainer"]
+layout_mode = 2
+text = "就绪"
+horizontal_alignment = 1
+
+[node name="CurrentTranslationContainer" type="VBoxContainer" parent="VBoxContainer/ControlsContainer"]
+visible = false
+layout_mode = 2
+
+[node name="CurrentTranslationLabel" type="Label" parent="VBoxContainer/ControlsContainer/CurrentTranslationContainer"]
+modulate = Color(0.8, 0.8, 0.8, 1)
+layout_mode = 2
+text = "正在翻译:"
+
+[node name="CurrentOriginalLabel" type="Label" parent="VBoxContainer/ControlsContainer/CurrentTranslationContainer"]
+clip_contents = true
+layout_mode = 2
+text = "原文: "
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="CurrentTranslatedLabel" type="Label" parent="VBoxContainer/ControlsContainer/CurrentTranslationContainer"]
+modulate = Color(0.7, 1, 0.7, 1)
+clip_contents = true
+layout_mode = 2
+text = "译文: "
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="FileDialog" type="FileDialog" parent="."]
+title = "Open a File"
+initial_position = 2
+size = Vector2i(800, 600)
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.csv ; CSV文件")
+
+[node name="SaveFileDialog" type="FileDialog" parent="."]
+title = "保存翻译后的CSV文件"
+initial_position = 2
+size = Vector2i(800, 600)
+ok_button_text = "保存"
+access = 2
+filters = PackedStringArray("*.csv ; CSV文件")
+
+[node name="AIConfigDialog" type="AcceptDialog" parent="."]
+title = "AI服务配置"
+initial_position = 2
+size = Vector2i(700, 500)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="AIConfigDialog"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -49.0
+
+[node name="TabContainer" type="TabContainer" parent="AIConfigDialog/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="OpenAI" type="VBoxContainer" parent="AIConfigDialog/VBoxContainer/TabContainer"]
+layout_mode = 2
+
+[node name="EnabledCheck" type="CheckBox" parent="AIConfigDialog/VBoxContainer/TabContainer/OpenAI"]
+layout_mode = 2
+text = "启用OpenAI服务"
+
+[node name="APIKeyLabel" type="Label" parent="AIConfigDialog/VBoxContainer/TabContainer/OpenAI"]
+layout_mode = 2
+text = "API密钥:"
+
+[node name="APIKeyContainer" type="HBoxContainer" parent="AIConfigDialog/VBoxContainer/TabContainer/OpenAI"]
+layout_mode = 2
+
+[node name="APIKeyInput" type="LineEdit" parent="AIConfigDialog/VBoxContainer/TabContainer/OpenAI/APIKeyContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "输入OpenAI API密钥"
+secret = true
+
+[node name="ToggleVisibilityButton" type="Button" parent="AIConfigDialog/VBoxContainer/TabContainer/OpenAI/APIKeyContainer"]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+text = "👁"
+
+[node name="BaseURLLabel" type="Label" parent="AIConfigDialog/VBoxContainer/TabContainer/OpenAI"]
+layout_mode = 2
+text = "基础URL:"
+
+[node name="BaseURLInput" type="LineEdit" parent="AIConfigDialog/VBoxContainer/TabContainer/OpenAI"]
+layout_mode = 2
+text = "https://api.openai.com/v1"
+
+[node name="ModelLabel" type="Label" parent="AIConfigDialog/VBoxContainer/TabContainer/OpenAI"]
+layout_mode = 2
+text = "模型:"
+
+[node name="ModelInput" type="LineEdit" parent="AIConfigDialog/VBoxContainer/TabContainer/OpenAI"]
+layout_mode = 2
+text = "gpt-3.5-turbo"
+
+[node name="Claude" type="VBoxContainer" parent="AIConfigDialog/VBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+
+[node name="EnabledCheck" type="CheckBox" parent="AIConfigDialog/VBoxContainer/TabContainer/Claude"]
+layout_mode = 2
+text = "启用Claude服务"
+
+[node name="APIKeyLabel" type="Label" parent="AIConfigDialog/VBoxContainer/TabContainer/Claude"]
+layout_mode = 2
+text = "API密钥:"
+
+[node name="APIKeyContainer" type="HBoxContainer" parent="AIConfigDialog/VBoxContainer/TabContainer/Claude"]
+layout_mode = 2
+
+[node name="APIKeyInput" type="LineEdit" parent="AIConfigDialog/VBoxContainer/TabContainer/Claude/APIKeyContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "输入Claude API密钥"
+secret = true
+
+[node name="ToggleVisibilityButton" type="Button" parent="AIConfigDialog/VBoxContainer/TabContainer/Claude/APIKeyContainer"]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+text = "👁"
+
+[node name="BaseURLLabel" type="Label" parent="AIConfigDialog/VBoxContainer/TabContainer/Claude"]
+layout_mode = 2
+text = "基础URL:"
+
+[node name="BaseURLInput" type="LineEdit" parent="AIConfigDialog/VBoxContainer/TabContainer/Claude"]
+layout_mode = 2
+text = "https://api.anthropic.com"
+
+[node name="ModelLabel" type="Label" parent="AIConfigDialog/VBoxContainer/TabContainer/Claude"]
+layout_mode = 2
+text = "模型:"
+
+[node name="ModelInput" type="LineEdit" parent="AIConfigDialog/VBoxContainer/TabContainer/Claude"]
+layout_mode = 2
+text = "claude-3-haiku-20240307"
+
+[node name="百度翻译" type="VBoxContainer" parent="AIConfigDialog/VBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+
+[node name="EnabledCheck" type="CheckBox" parent="AIConfigDialog/VBoxContainer/TabContainer/百度翻译"]
+layout_mode = 2
+text = "启用百度翻译服务"
+
+[node name="AppIDLabel" type="Label" parent="AIConfigDialog/VBoxContainer/TabContainer/百度翻译"]
+layout_mode = 2
+text = "APP ID:"
+
+[node name="AppIDInput" type="LineEdit" parent="AIConfigDialog/VBoxContainer/TabContainer/百度翻译"]
+layout_mode = 2
+placeholder_text = "输入百度翻译APP ID"
+
+[node name="SecretKeyLabel" type="Label" parent="AIConfigDialog/VBoxContainer/TabContainer/百度翻译"]
+layout_mode = 2
+text = "密钥:"
+
+[node name="SecretKeyContainer" type="HBoxContainer" parent="AIConfigDialog/VBoxContainer/TabContainer/百度翻译"]
+layout_mode = 2
+
+[node name="SecretKeyInput" type="LineEdit" parent="AIConfigDialog/VBoxContainer/TabContainer/百度翻译/SecretKeyContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "输入百度翻译密钥"
+secret = true
+
+[node name="ToggleVisibilityButton" type="Button" parent="AIConfigDialog/VBoxContainer/TabContainer/百度翻译/SecretKeyContainer"]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+text = "👁"
+
+[node name="本地模型" type="VBoxContainer" parent="AIConfigDialog/VBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+
+[node name="EnabledCheck" type="CheckBox" parent="AIConfigDialog/VBoxContainer/TabContainer/本地模型"]
+layout_mode = 2
+text = "启用本地模型服务"
+
+[node name="BaseURLLabel" type="Label" parent="AIConfigDialog/VBoxContainer/TabContainer/本地模型"]
+layout_mode = 2
+text = "服务URL:"
+
+[node name="BaseURLInput" type="LineEdit" parent="AIConfigDialog/VBoxContainer/TabContainer/本地模型"]
+layout_mode = 2
+text = "http://localhost:11434"
+
+[node name="ModelLabel" type="Label" parent="AIConfigDialog/VBoxContainer/TabContainer/本地模型"]
+layout_mode = 2
+text = "模型名称:"
+
+[node name="ModelInput" type="LineEdit" parent="AIConfigDialog/VBoxContainer/TabContainer/本地模型"]
+layout_mode = 2
+text = "llama2"
+
+[node name="ProviderLabel" type="Label" parent="AIConfigDialog/VBoxContainer/TabContainer/本地模型"]
+layout_mode = 2
+text = "提供商:"
+
+[node name="ProviderOption" type="OptionButton" parent="AIConfigDialog/VBoxContainer/TabContainer/本地模型"]
+layout_mode = 2
+
+[node name="DeepSeek" type="VBoxContainer" parent="AIConfigDialog/VBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+
+[node name="EnabledCheck" type="CheckBox" parent="AIConfigDialog/VBoxContainer/TabContainer/DeepSeek"]
+layout_mode = 2
+text = "启用DeepSeek服务"
+
+[node name="APIKeyLabel" type="Label" parent="AIConfigDialog/VBoxContainer/TabContainer/DeepSeek"]
+layout_mode = 2
+text = "API密钥:"
+
+[node name="APIKeyContainer" type="HBoxContainer" parent="AIConfigDialog/VBoxContainer/TabContainer/DeepSeek"]
+layout_mode = 2
+
+[node name="APIKeyInput" type="LineEdit" parent="AIConfigDialog/VBoxContainer/TabContainer/DeepSeek/APIKeyContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "输入DeepSeek API密钥"
+secret = true
+
+[node name="ToggleVisibilityButton" type="Button" parent="AIConfigDialog/VBoxContainer/TabContainer/DeepSeek/APIKeyContainer"]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+text = "👁"
+
+[node name="BaseURLLabel" type="Label" parent="AIConfigDialog/VBoxContainer/TabContainer/DeepSeek"]
+layout_mode = 2
+text = "基础URL:"
+
+[node name="BaseURLInput" type="LineEdit" parent="AIConfigDialog/VBoxContainer/TabContainer/DeepSeek"]
+layout_mode = 2
+text = "https://api.deepseek.com"
+
+[node name="ModelLabel" type="Label" parent="AIConfigDialog/VBoxContainer/TabContainer/DeepSeek"]
+layout_mode = 2
+text = "模型:"
+
+[node name="ModelInput" type="LineEdit" parent="AIConfigDialog/VBoxContainer/TabContainer/DeepSeek"]
+layout_mode = 2
+text = "deepseek-chat"
+
+[node name="ButtonContainer" type="HBoxContainer" parent="AIConfigDialog/VBoxContainer"]
+layout_mode = 2
+
+[node name="TestButton" type="Button" parent="AIConfigDialog/VBoxContainer/ButtonContainer"]
+layout_mode = 2
+text = "测试连接"
+
+[node name="SaveButton" type="Button" parent="AIConfigDialog/VBoxContainer/ButtonContainer"]
+layout_mode = 2
+text = "保存配置"
+
+[node name="ResetButton" type="Button" parent="AIConfigDialog/VBoxContainer/ButtonContainer"]
+layout_mode = 2
+text = "重置为默认"
+
+[node name="LanguageConfigDialog" type="AcceptDialog" parent="."]
+title = "语言配置"
+initial_position = 2
+size = Vector2i(800, 600)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="LanguageConfigDialog"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -49.0
+
+[node name="TitleLabel" type="Label" parent="LanguageConfigDialog/VBoxContainer"]
+layout_mode = 2
+text = "自定义语言代码含义"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="LanguageConfigDialog/VBoxContainer"]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="LanguageConfigDialog/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="LanguageList" type="VBoxContainer" parent="LanguageConfigDialog/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HSeparator2" type="HSeparator" parent="LanguageConfigDialog/VBoxContainer"]
+layout_mode = 2
+
+[node name="AddLanguageContainer" type="HBoxContainer" parent="LanguageConfigDialog/VBoxContainer"]
+layout_mode = 2
+
+[node name="CodeLabel" type="Label" parent="LanguageConfigDialog/VBoxContainer/AddLanguageContainer"]
+layout_mode = 2
+text = "语言代码:"
+
+[node name="CodeInput" type="LineEdit" parent="LanguageConfigDialog/VBoxContainer/AddLanguageContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "例如: lzh"
+
+[node name="NameLabel" type="Label" parent="LanguageConfigDialog/VBoxContainer/AddLanguageContainer"]
+layout_mode = 2
+text = "显示名称:"
+
+[node name="NameInput" type="LineEdit" parent="LanguageConfigDialog/VBoxContainer/AddLanguageContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "例如: 文言文"
+
+[node name="AddButton" type="Button" parent="LanguageConfigDialog/VBoxContainer/AddLanguageContainer"]
+layout_mode = 2
+text = "添加/更新"
+
+[node name="ButtonContainer" type="HBoxContainer" parent="LanguageConfigDialog/VBoxContainer"]
+layout_mode = 2
+
+[node name="SaveLanguageButton" type="Button" parent="LanguageConfigDialog/VBoxContainer/ButtonContainer"]
+layout_mode = 2
+text = "保存配置"
+
+[node name="ResetLanguageButton" type="Button" parent="LanguageConfigDialog/VBoxContainer/ButtonContainer"]
+layout_mode = 2
+text = "重置为默认"

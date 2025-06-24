@@ -1,0 +1,46 @@
+keys,en
+HELLO_WORLD,Hello World
+GAME_START,Start Game
+GAME_EXIT,Exit Game
+MENU_SETTINGS,Settings
+MENU_CREDITS,Credits
+PLAYER_NAME,Player Name
+SCORE,Score
+HIGH_SCORE,High Score
+LEVEL,Level
+LIVES,Lives
+GAME_OVER,Game Over
+YOU_WIN,You Win!
+CONTINUE,Continue
+NEW_GAME,New Game
+LOAD_GAME,Load Game
+SAVE_GAME,Save Game
+PAUSE,Pause
+RESUME,Resume
+VOLUME,Volume
+MUSIC,Music
+SOUND_EFFECTS,Sound Effects
+CONTROLS,Controls
+LANGUAGE,Language
+BACK,Back
+CONFIRM,Confirm
+CANCEL,Cancel
+YES,Yes
+NO,No
+OK,OK
+ERROR,Error
+WARNING,Warning
+SUCCESS,Success
+LOADING,Loading...
+HEALTH,Health
+MANA,Mana
+INVENTORY,Inventory
+SHOP,Shop
+BUY,Buy
+SELL,Sell
+EQUIPMENT,Equipment
+SKILLS,Skills
+ACHIEVEMENTS,Achievements
+TUTORIAL,Tutorial
+HELP,Help
+ABOUT,About 

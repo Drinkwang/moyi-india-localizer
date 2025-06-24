@@ -1,0 +1,55 @@
+{
+	"default_service": "openai",
+	"retry_count": 3,
+	"services": {
+		"baidu": {
+			"app_id": "",
+			"base_url": "https://fanyi-api.baidu.com/api/trans/vip/translate",
+			"enabled": false,
+			"name": "百度翻译",
+			"secret_key": ""
+		},
+		"claude": {
+			"api_key": "",
+			"base_url": "https://api.anthropic.com",
+			"enabled": false,
+			"max_tokens": 2000,
+			"model": "claude-3-haiku-20240307",
+			"name": "Anthropic Claude",
+			"temperature": 0.3
+		},
+		"deepseek": {
+			"api_key": "sk-3bb767ca5f4b4d25b4ba59318d796e43",
+			"base_url": "https://api.deepseek.com",
+			"enabled": true,
+			"max_tokens": 2000,
+			"model": "deepseek-chat",
+			"name": "DeepSeek",
+			"temperature": 0.3
+		},
+		"local": {
+			"base_url": "http://localhost:11434",
+			"enabled": false,
+			"model": "llama2",
+			"name": "本地模型",
+			"provider": "ollama"
+		},
+		"openai": {
+			"api_key": "",
+			"base_url": "https://api.openai.com/v1",
+			"enabled": true,
+			"max_tokens": 2000,
+			"model": "gpt-4o-mini",
+			"name": "OpenAI",
+			"temperature": 0.3
+		},
+		"tencent": {
+			"enabled": false,
+			"name": "腾讯翻译",
+			"region": "ap-beijing",
+			"secret_id": "",
+			"secret_key": ""
+		}
+	},
+	"timeout": 30
+}
