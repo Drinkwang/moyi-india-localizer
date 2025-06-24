@@ -55,6 +55,14 @@ text = "配置AI服务"
 layout_mode = 2
 text = "语言配置"
 
+[node name="TemplateConfigButton" type="Button" parent="VBoxContainer/SettingsContainer/ModeContainer"]
+layout_mode = 2
+text = "翻译模板配置"
+
+[node name="KnowledgeBaseConfigButton" type="Button" parent="VBoxContainer/SettingsContainer/ModeContainer"]
+layout_mode = 2
+text = "知识库配置"
+
 [node name="BasicSettingsContainer" type="HBoxContainer" parent="VBoxContainer/SettingsContainer"]
 layout_mode = 2
 
@@ -150,6 +158,80 @@ text = "请先选择输入文件"
 horizontal_alignment = 2
 
 [node name="SaveAsButton" type="Button" parent="VBoxContainer/SettingsContainer/GodotSettingsContainer/OutputContainer"]
+layout_mode = 2
+text = "另存为..."
+
+[node name="UnitySettingsContainer" type="VBoxContainer" parent="VBoxContainer/SettingsContainer"]
+visible = false
+layout_mode = 2
+
+[node name="UnityFileContainer" type="HBoxContainer" parent="VBoxContainer/SettingsContainer/UnitySettingsContainer"]
+layout_mode = 2
+
+[node name="UnityFileLabel" type="Label" parent="VBoxContainer/SettingsContainer/UnitySettingsContainer/UnityFileContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Unity多语言文件:"
+
+[node name="UnityFileButton" type="Button" parent="VBoxContainer/SettingsContainer/UnitySettingsContainer/UnityFileContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "选择文件"
+
+[node name="UnityInfoContainer" type="VBoxContainer" parent="VBoxContainer/SettingsContainer/UnitySettingsContainer"]
+layout_mode = 2
+
+[node name="UnityInfoLabel" type="Label" parent="VBoxContainer/SettingsContainer/UnitySettingsContainer/UnityInfoContainer"]
+modulate = Color(0.7, 0.7, 0.7, 1)
+layout_mode = 2
+text = "支持格式: Unity Localization Package (JSON)"
+
+[node name="UnityLanguageInputContainer" type="VBoxContainer" parent="VBoxContainer/SettingsContainer/UnitySettingsContainer"]
+layout_mode = 2
+
+[node name="UnitySourceLangLabel" type="Label" parent="VBoxContainer/SettingsContainer/UnitySettingsContainer/UnityLanguageInputContainer"]
+layout_mode = 2
+text = "源语言代码 (如: en):"
+
+[node name="UnitySourceLangInput" type="LineEdit" parent="VBoxContainer/SettingsContainer/UnitySettingsContainer/UnityLanguageInputContainer"]
+layout_mode = 2
+placeholder_text = "en"
+
+[node name="UnityTargetLangsLabel" type="Label" parent="VBoxContainer/SettingsContainer/UnitySettingsContainer/UnityLanguageInputContainer"]
+layout_mode = 2
+text = "目标语言代码 (用逗号分隔，如: zh-CN,ja,ko):"
+
+[node name="UnityTargetLangsInput" type="LineEdit" parent="VBoxContainer/SettingsContainer/UnitySettingsContainer/UnityLanguageInputContainer"]
+layout_mode = 2
+placeholder_text = "zh-CN,ja,ko,ru"
+
+[node name="UnityServiceContainer" type="HBoxContainer" parent="VBoxContainer/SettingsContainer/UnitySettingsContainer"]
+layout_mode = 2
+
+[node name="UnityServiceLabel" type="Label" parent="VBoxContainer/SettingsContainer/UnitySettingsContainer/UnityServiceContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "翻译服务:"
+
+[node name="UnityServiceOption" type="OptionButton" parent="VBoxContainer/SettingsContainer/UnitySettingsContainer/UnityServiceContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="UnityOutputContainer" type="HBoxContainer" parent="VBoxContainer/SettingsContainer/UnitySettingsContainer"]
+layout_mode = 2
+
+[node name="UnityOutputLabel" type="Label" parent="VBoxContainer/SettingsContainer/UnitySettingsContainer/UnityOutputContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "输出文件:"
+
+[node name="UnityOutputPathLabel" type="Label" parent="VBoxContainer/SettingsContainer/UnitySettingsContainer/UnityOutputContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "请先选择输入文件"
+horizontal_alignment = 2
+
+[node name="UnitySaveAsButton" type="Button" parent="VBoxContainer/SettingsContainer/UnitySettingsContainer/UnityOutputContainer"]
 layout_mode = 2
 text = "另存为..."
 
@@ -558,3 +640,283 @@ text = "保存配置"
 [node name="ResetLanguageButton" type="Button" parent="LanguageConfigDialog/VBoxContainer/ButtonContainer"]
 layout_mode = 2
 text = "重置为默认"
+
+[node name="TemplateConfigDialog" type="AcceptDialog" parent="."]
+title = "翻译模板配置"
+initial_position = 2
+size = Vector2i(1000, 700)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TemplateConfigDialog"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -49.0
+
+[node name="TitleLabel" type="Label" parent="TemplateConfigDialog/VBoxContainer"]
+layout_mode = 2
+text = "翻译模板管理"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="TemplateConfigDialog/VBoxContainer"]
+layout_mode = 2
+
+[node name="MainContainer" type="HBoxContainer" parent="TemplateConfigDialog/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="TemplateListContainer" type="VBoxContainer" parent="TemplateConfigDialog/VBoxContainer/MainContainer"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ListLabel" type="Label" parent="TemplateConfigDialog/VBoxContainer/MainContainer/TemplateListContainer"]
+layout_mode = 2
+text = "模板列表"
+
+[node name="TemplateList" type="ItemList" parent="TemplateConfigDialog/VBoxContainer/MainContainer/TemplateListContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="EditContainer" type="VBoxContainer" parent="TemplateConfigDialog/VBoxContainer/MainContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TemplateInfoContainer" type="VBoxContainer" parent="TemplateConfigDialog/VBoxContainer/MainContainer/EditContainer"]
+layout_mode = 2
+
+[node name="NameContainer" type="HBoxContainer" parent="TemplateConfigDialog/VBoxContainer/MainContainer/EditContainer/TemplateInfoContainer"]
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="TemplateConfigDialog/VBoxContainer/MainContainer/EditContainer/TemplateInfoContainer/NameContainer"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "模板名称:"
+
+[node name="NameInput" type="LineEdit" parent="TemplateConfigDialog/VBoxContainer/MainContainer/EditContainer/TemplateInfoContainer/NameContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DescContainer" type="HBoxContainer" parent="TemplateConfigDialog/VBoxContainer/MainContainer/EditContainer/TemplateInfoContainer"]
+layout_mode = 2
+
+[node name="DescLabel" type="Label" parent="TemplateConfigDialog/VBoxContainer/MainContainer/EditContainer/TemplateInfoContainer/DescContainer"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "描述:"
+
+[node name="DescInput" type="LineEdit" parent="TemplateConfigDialog/VBoxContainer/MainContainer/EditContainer/TemplateInfoContainer/DescContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SystemPromptContainer" type="VBoxContainer" parent="TemplateConfigDialog/VBoxContainer/MainContainer/EditContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SystemLabel" type="Label" parent="TemplateConfigDialog/VBoxContainer/MainContainer/EditContainer/SystemPromptContainer"]
+layout_mode = 2
+text = "系统提示词:"
+
+[node name="SystemTextEdit" type="TextEdit" parent="TemplateConfigDialog/VBoxContainer/MainContainer/EditContainer/SystemPromptContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="UserPromptContainer" type="VBoxContainer" parent="TemplateConfigDialog/VBoxContainer/MainContainer/EditContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="UserLabel" type="Label" parent="TemplateConfigDialog/VBoxContainer/MainContainer/EditContainer/UserPromptContainer"]
+layout_mode = 2
+text = "用户提示词模板:"
+
+[node name="UserTextEdit" type="TextEdit" parent="TemplateConfigDialog/VBoxContainer/MainContainer/EditContainer/UserPromptContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HSeparator2" type="HSeparator" parent="TemplateConfigDialog/VBoxContainer"]
+layout_mode = 2
+
+[node name="HelpContainer" type="VBoxContainer" parent="TemplateConfigDialog/VBoxContainer"]
+layout_mode = 2
+
+[node name="HelpLabel" type="Label" parent="TemplateConfigDialog/VBoxContainer/HelpContainer"]
+modulate = Color(0.7, 0.7, 0.7, 1)
+layout_mode = 2
+text = "可用变量: {source_language} {target_language} {text}"
+
+[node name="ButtonContainer" type="HBoxContainer" parent="TemplateConfigDialog/VBoxContainer"]
+layout_mode = 2
+
+[node name="SaveTemplateButton" type="Button" parent="TemplateConfigDialog/VBoxContainer/ButtonContainer"]
+layout_mode = 2
+text = "保存模板"
+
+[node name="ResetTemplateButton" type="Button" parent="TemplateConfigDialog/VBoxContainer/ButtonContainer"]
+layout_mode = 2
+text = "重置"
+
+[node name="ImportButton" type="Button" parent="TemplateConfigDialog/VBoxContainer/ButtonContainer"]
+layout_mode = 2
+text = "导入"
+
+[node name="ExportButton" type="Button" parent="TemplateConfigDialog/VBoxContainer/ButtonContainer"]
+layout_mode = 2
+text = "导出"
+
+[node name="KnowledgeBaseConfigDialog" type="AcceptDialog" parent="."]
+title = "知识库配置"
+initial_position = 2
+size = Vector2i(800, 500)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="KnowledgeBaseConfigDialog"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -49.0
+
+[node name="TitleLabel" type="Label" parent="KnowledgeBaseConfigDialog/VBoxContainer"]
+layout_mode = 2
+text = "知识库路径配置"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="KnowledgeBaseConfigDialog/VBoxContainer"]
+layout_mode = 2
+
+[node name="CurrentPathContainer" type="VBoxContainer" parent="KnowledgeBaseConfigDialog/VBoxContainer"]
+layout_mode = 2
+
+[node name="CurrentPathLabel" type="Label" parent="KnowledgeBaseConfigDialog/VBoxContainer/CurrentPathContainer"]
+layout_mode = 2
+text = "当前知识库路径:"
+
+[node name="CurrentPathDisplay" type="LineEdit" parent="KnowledgeBaseConfigDialog/VBoxContainer/CurrentPathContainer"]
+layout_mode = 2
+placeholder_text = "data/knowledge_base/"
+editable = false
+
+[node name="HSeparator2" type="HSeparator" parent="KnowledgeBaseConfigDialog/VBoxContainer"]
+layout_mode = 2
+
+[node name="NewPathContainer" type="VBoxContainer" parent="KnowledgeBaseConfigDialog/VBoxContainer"]
+layout_mode = 2
+
+[node name="NewPathLabel" type="Label" parent="KnowledgeBaseConfigDialog/VBoxContainer/NewPathContainer"]
+layout_mode = 2
+text = "选择新的知识库路径:"
+
+[node name="PathSelectContainer" type="HBoxContainer" parent="KnowledgeBaseConfigDialog/VBoxContainer/NewPathContainer"]
+layout_mode = 2
+
+[node name="NewPathInput" type="LineEdit" parent="KnowledgeBaseConfigDialog/VBoxContainer/NewPathContainer/PathSelectContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "输入新的知识库路径..."
+
+[node name="BrowseButton" type="Button" parent="KnowledgeBaseConfigDialog/VBoxContainer/NewPathContainer/PathSelectContainer"]
+layout_mode = 2
+text = "浏览..."
+
+[node name="ValidateButton" type="Button" parent="KnowledgeBaseConfigDialog/VBoxContainer/NewPathContainer/PathSelectContainer"]
+layout_mode = 2
+text = "验证路径"
+
+[node name="StatusContainer" type="VBoxContainer" parent="KnowledgeBaseConfigDialog/VBoxContainer"]
+layout_mode = 2
+
+[node name="StatusLabel" type="Label" parent="KnowledgeBaseConfigDialog/VBoxContainer/StatusContainer"]
+modulate = Color(0.7, 0.7, 0.7, 1)
+layout_mode = 2
+text = "路径状态: 未验证"
+
+[node name="InfoLabel" type="Label" parent="KnowledgeBaseConfigDialog/VBoxContainer/StatusContainer"]
+modulate = Color(0.6, 0.6, 0.6, 1)
+layout_mode = 2
+text = "提示: 更改路径时可以选择是否迁移现有数据"
+
+[node name="HSeparator3" type="HSeparator" parent="KnowledgeBaseConfigDialog/VBoxContainer"]
+layout_mode = 2
+
+[node name="OptionsContainer" type="VBoxContainer" parent="KnowledgeBaseConfigDialog/VBoxContainer"]
+layout_mode = 2
+
+[node name="MigrateDataCheck" type="CheckBox" parent="KnowledgeBaseConfigDialog/VBoxContainer/OptionsContainer"]
+layout_mode = 2
+button_pressed = true
+text = "迁移现有数据到新路径"
+
+[node name="AutoBackupCheck" type="CheckBox" parent="KnowledgeBaseConfigDialog/VBoxContainer/OptionsContainer"]
+layout_mode = 2
+button_pressed = true
+text = "启用自动备份"
+
+[node name="AdvancedContainer" type="VBoxContainer" parent="KnowledgeBaseConfigDialog/VBoxContainer"]
+layout_mode = 2
+
+[node name="AdvancedLabel" type="Label" parent="KnowledgeBaseConfigDialog/VBoxContainer/AdvancedContainer"]
+layout_mode = 2
+text = "高级设置:"
+
+[node name="SettingsGrid" type="GridContainer" parent="KnowledgeBaseConfigDialog/VBoxContainer/AdvancedContainer"]
+layout_mode = 2
+columns = 2
+
+[node name="CacheSizeLabel" type="Label" parent="KnowledgeBaseConfigDialog/VBoxContainer/AdvancedContainer/SettingsGrid"]
+layout_mode = 2
+text = "缓存大小:"
+
+[node name="CacheSizeSpinBox" type="SpinBox" parent="KnowledgeBaseConfigDialog/VBoxContainer/AdvancedContainer/SettingsGrid"]
+layout_mode = 2
+min_value = 100.0
+max_value = 10000.0
+step = 100.0
+value = 1000.0
+
+[node name="SimilarityLabel" type="Label" parent="KnowledgeBaseConfigDialog/VBoxContainer/AdvancedContainer/SettingsGrid"]
+layout_mode = 2
+text = "相似度阈值:"
+
+[node name="SimilaritySpinBox" type="SpinBox" parent="KnowledgeBaseConfigDialog/VBoxContainer/AdvancedContainer/SettingsGrid"]
+layout_mode = 2
+max_value = 1.0
+step = 0.1
+value = 0.6
+
+[node name="ButtonContainer" type="HBoxContainer" parent="KnowledgeBaseConfigDialog/VBoxContainer"]
+layout_mode = 2
+
+[node name="ApplyButton" type="Button" parent="KnowledgeBaseConfigDialog/VBoxContainer/ButtonContainer"]
+layout_mode = 2
+disabled = true
+text = "应用更改"
+
+[node name="ResetButton" type="Button" parent="KnowledgeBaseConfigDialog/VBoxContainer/ButtonContainer"]
+layout_mode = 2
+text = "重置为默认"
+
+[node name="OpenFolderButton" type="Button" parent="KnowledgeBaseConfigDialog/VBoxContainer/ButtonContainer"]
+layout_mode = 2
+text = "打开文件夹"
+
+[node name="KBDirectoryDialog" type="FileDialog" parent="."]
+title = "Open a Directory"
+initial_position = 2
+size = Vector2i(800, 600)
+ok_button_text = "Select Current Folder"
+file_mode = 2
+access = 2
+
+[node name="TemplateConfigDialog_VBoxContainer_MainContainer_TemplateListContainer_ListButtonsContainer#ListButtonsContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="TemplateConfigDialog_VBoxContainer_MainContainer_TemplateListContainer_ListButtonsContainer#AddTemplateButton" type="Button" parent="."]
+layout_mode = 2
+text = "新建"
+
+[node name="TemplateConfigDialog_VBoxContainer_MainContainer_TemplateListContainer_ListButtonsContainer#DeleteTemplateButton" type="Button" parent="."]
+layout_mode = 2
+text = "删除"

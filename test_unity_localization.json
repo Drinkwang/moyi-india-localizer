@@ -1,0 +1,62 @@
+{
+  "StringDatabase": {
+    "Tables": [
+      {
+        "TableCollectionName": "UI Text",
+        "SharedTableData": {
+          "Entries": [
+            {"Id": 1, "Key": "menu_start"},
+            {"Id": 2, "Key": "menu_settings"},
+            {"Id": 3, "Key": "menu_quit"},
+            {"Id": 4, "Key": "game_pause"},
+            {"Id": 5, "Key": "game_resume"},
+            {"Id": 6, "Key": "dialog_confirm"},
+            {"Id": 7, "Key": "dialog_cancel"},
+            {"Id": 8, "Key": "inventory_title"},
+            {"Id": 9, "Key": "health_label"},
+            {"Id": 10, "Key": "score_label"}
+          ]
+        },
+        "TableData": [
+          {
+            "LocaleIdentifier": "en",
+            "Entries": [
+              {"Id": 1, "Value": "Start Game"},
+              {"Id": 2, "Value": "Settings"},
+              {"Id": 3, "Value": "Quit Game"},
+              {"Id": 4, "Value": "Game Paused"},
+              {"Id": 5, "Value": "Resume"},
+              {"Id": 6, "Value": "Confirm"},
+              {"Id": 7, "Value": "Cancel"},
+              {"Id": 8, "Value": "Inventory"},
+              {"Id": 9, "Value": "Health"},
+              {"Id": 10, "Value": "Score"}
+            ]
+          }
+        ]
+      },
+      {
+        "TableCollectionName": "Story Text",
+        "SharedTableData": {
+          "Entries": [
+            {"Id": 11, "Key": "intro_welcome"},
+            {"Id": 12, "Key": "intro_tutorial"},
+            {"Id": 13, "Key": "level_complete"},
+            {"Id": 14, "Key": "game_over"}
+          ]
+        },
+        "TableData": [
+          {
+            "LocaleIdentifier": "en",
+            "Entries": [
+              {"Id": 11, "Value": "Welcome to the adventure!"},
+              {"Id": 12, "Value": "Use WASD keys to move your character."},
+              {"Id": 13, "Value": "Congratulations! Level completed!"},
+              {"Id": 14, "Value": "Game Over. Try again?"}
+            ]
+          }
+        ]
+      }
+    ]
+  }
+} 

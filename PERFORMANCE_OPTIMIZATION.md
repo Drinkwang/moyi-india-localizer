@@ -36,16 +36,16 @@ print("🔄 [翻译开始] 第%d项: '%s'" % [index + 1, text])
 
 # 翻译完成：只有成功才更新UI
 if success:
-    # 同时添加原文和译文到缓存
-    source_lines.append("[%d] %s" % [index + 1, original_text])
-    target_lines.append("[%d] %s" % [index + 1, display_text])
-    
-    # 立即更新UI（只在成功时）
-    source_text_edit.text = "\n".join(source_lines)
-    target_text_edit.text = "\n".join(target_lines)
+	# 同时添加原文和译文到缓存
+	source_lines.append("[%d] %s" % [index + 1, original_text])
+	target_lines.append("[%d] %s" % [index + 1, display_text])
+	
+	# 立即更新UI（只在成功时）
+	source_text_edit.text = "\n".join(source_lines)
+	target_text_edit.text = "\n".join(target_lines)
 else:
-    # 失败时只记录日志，不更新UI
-    print("❌ [翻译失败] 第%d项: %s" % [index + 1, error])
+	# 失败时只记录日志，不更新UI
+	print("❌ [翻译失败] 第%d项: %s" % [index + 1, error])
 ```
 
 ### 缓存管理
@@ -56,8 +56,8 @@ set_meta("target_lines_cache", [])
 
 # 只有成功的翻译才进入缓存
 if success:
-    source_lines.append("[%d] %s" % [index + 1, original_text])
-    target_lines.append("[%d] %s" % [index + 1, translated_text])
+	source_lines.append("[%d] %s" % [index + 1, original_text])
+	target_lines.append("[%d] %s" % [index + 1, translated_text])
 ```
 
 ### 状态统计
@@ -65,7 +65,7 @@ if success:
 # 获取成功翻译的数量
 var success_count = 0
 if has_meta("target_lines_cache"):
-    success_count = get_meta("target_lines_cache").size()
+	success_count = get_meta("target_lines_cache").size()
 
 # 显示统计信息
 print("📊 已处理 %d/%d 项，成功显示 %d 项" % [processed, total, success_count])

@@ -37,6 +37,7 @@ extends Control
 @onready var mode_option: OptionButton = $VBoxContainer/SettingsContainer/ModeContainer/ModeOption
 @onready var basic_settings_container: HBoxContainer = $VBoxContainer/SettingsContainer/BasicSettingsContainer
 @onready var godot_settings_container: VBoxContainer = $VBoxContainer/SettingsContainer/GodotSettingsContainer
+@onready var unity_settings_container: VBoxContainer = $VBoxContainer/SettingsContainer/UnitySettingsContainer
 @onready var file_button: Button = $VBoxContainer/SettingsContainer/GodotSettingsContainer/FileContainer/FileButton
 @onready var source_lang_input: LineEdit = $VBoxContainer/SettingsContainer/GodotSettingsContainer/LanguageInputContainer/SourceLangInput
 @onready var target_langs_input: LineEdit = $VBoxContainer/SettingsContainer/GodotSettingsContainer/LanguageInputContainer/TargetLangsInput
@@ -45,6 +46,14 @@ extends Control
 @onready var service_option_csv: OptionButton = $VBoxContainer/SettingsContainer/GodotSettingsContainer/ServiceContainer/ServiceOptionCSV
 @onready var output_path_label: Label = $VBoxContainer/SettingsContainer/GodotSettingsContainer/OutputContainer/OutputPathLabel
 @onready var save_as_button: Button = $VBoxContainer/SettingsContainer/GodotSettingsContainer/OutputContainer/SaveAsButton
+
+# Unity相关UI节点引用
+@onready var unity_file_button: Button = $VBoxContainer/SettingsContainer/UnitySettingsContainer/UnityFileContainer/UnityFileButton
+@onready var unity_source_lang_input: LineEdit = $VBoxContainer/SettingsContainer/UnitySettingsContainer/UnityLanguageInputContainer/UnitySourceLangInput
+@onready var unity_target_langs_input: LineEdit = $VBoxContainer/SettingsContainer/UnitySettingsContainer/UnityLanguageInputContainer/UnityTargetLangsInput
+@onready var unity_service_option: OptionButton = $VBoxContainer/SettingsContainer/UnitySettingsContainer/UnityServiceContainer/UnityServiceOption
+@onready var unity_output_path_label: Label = $VBoxContainer/SettingsContainer/UnitySettingsContainer/UnityOutputContainer/UnityOutputPathLabel
+@onready var unity_save_as_button: Button = $VBoxContainer/SettingsContainer/UnitySettingsContainer/UnityOutputContainer/UnitySaveAsButton
 
 # AI配置对话框节点引用
 @onready var ai_config_dialog: AcceptDialog = $AIConfigDialog
@@ -86,15 +95,50 @@ extends Control
 @onready var save_language_button: Button = $LanguageConfigDialog/VBoxContainer/ButtonContainer/SaveLanguageButton
 @onready var reset_language_button: Button = $LanguageConfigDialog/VBoxContainer/ButtonContainer/ResetLanguageButton
 
+# 翻译模板配置对话框节点引用
+@onready var template_config_dialog: AcceptDialog = $TemplateConfigDialog
+@onready var template_config_button: Button = $VBoxContainer/SettingsContainer/ModeContainer/TemplateConfigButton
+@onready var template_list: ItemList = $TemplateConfigDialog/VBoxContainer/MainContainer/TemplateListContainer/TemplateList
+@onready var template_name_input: LineEdit = $TemplateConfigDialog/VBoxContainer/MainContainer/EditContainer/TemplateInfoContainer/NameContainer/NameInput
+@onready var template_desc_input: LineEdit = $TemplateConfigDialog/VBoxContainer/MainContainer/EditContainer/TemplateInfoContainer/DescContainer/DescInput
+@onready var template_system_edit: TextEdit = $TemplateConfigDialog/VBoxContainer/MainContainer/EditContainer/SystemPromptContainer/SystemTextEdit
+@onready var template_user_edit: TextEdit = $TemplateConfigDialog/VBoxContainer/MainContainer/EditContainer/UserPromptContainer/UserTextEdit
+@onready var add_template_button: Button = $TemplateConfigDialog/VBoxContainer/MainContainer/TemplateListContainer/ListButtonsContainer/AddTemplateButton
+@onready var delete_template_button: Button = $TemplateConfigDialog/VBoxContainer/MainContainer/TemplateListContainer/ListButtonsContainer/DeleteTemplateButton
+@onready var save_template_button: Button = $TemplateConfigDialog/VBoxContainer/ButtonContainer/SaveTemplateButton
+@onready var reset_template_button: Button = $TemplateConfigDialog/VBoxContainer/ButtonContainer/ResetTemplateButton
+@onready var import_template_button: Button = $TemplateConfigDialog/VBoxContainer/ButtonContainer/ImportButton
+@onready var export_template_button: Button = $TemplateConfigDialog/VBoxContainer/ButtonContainer/ExportButton
+
+# 知识库配置对话框节点引用
+@onready var kb_config_dialog: AcceptDialog = $KnowledgeBaseConfigDialog
+@onready var kb_config_button: Button = $VBoxContainer/SettingsContainer/ModeContainer/KnowledgeBaseConfigButton
+@onready var current_path_display: LineEdit = $KnowledgeBaseConfigDialog/VBoxContainer/CurrentPathContainer/CurrentPathDisplay
+@onready var new_path_input: LineEdit = $KnowledgeBaseConfigDialog/VBoxContainer/NewPathContainer/PathSelectContainer/NewPathInput
+@onready var browse_button: Button = $KnowledgeBaseConfigDialog/VBoxContainer/NewPathContainer/PathSelectContainer/BrowseButton
+@onready var validate_button: Button = $KnowledgeBaseConfigDialog/VBoxContainer/NewPathContainer/PathSelectContainer/ValidateButton
+@onready var kb_status_label: Label = $KnowledgeBaseConfigDialog/VBoxContainer/StatusContainer/StatusLabel
+@onready var migrate_data_check: CheckBox = $KnowledgeBaseConfigDialog/VBoxContainer/OptionsContainer/MigrateDataCheck
+@onready var auto_backup_check: CheckBox = $KnowledgeBaseConfigDialog/VBoxContainer/OptionsContainer/AutoBackupCheck
+@onready var cache_size_spinbox: SpinBox = $KnowledgeBaseConfigDialog/VBoxContainer/AdvancedContainer/SettingsGrid/CacheSizeSpinBox
+@onready var similarity_spinbox: SpinBox = $KnowledgeBaseConfigDialog/VBoxContainer/AdvancedContainer/SettingsGrid/SimilaritySpinBox
+@onready var apply_button: Button = $KnowledgeBaseConfigDialog/VBoxContainer/ButtonContainer/ApplyButton
+@onready var reset_kb_button: Button = $KnowledgeBaseConfigDialog/VBoxContainer/ButtonContainer/ResetButton
+@onready var open_folder_button: Button = $KnowledgeBaseConfigDialog/VBoxContainer/ButtonContainer/OpenFolderButton
+@onready var kb_directory_dialog: FileDialog = $KBDirectoryDialog
+
 # 翻译模式
 enum TranslationMode {
 	BASIC,    # 基础文本翻译
-	GODOT_CSV # Godot CSV翻译
+	GODOT_CSV, # Godot CSV翻译
+	UNITY_LOCALIZATION # Unity多语言翻译
 }
 
 var current_mode: TranslationMode = TranslationMode.BASIC
 var selected_csv_file: String = ""
 var output_csv_file: String = ""
+var selected_unity_file: String = ""
+var output_unity_file: String = ""
 
 func _ready():
 	_initialize_services()
@@ -167,6 +211,12 @@ func _connect_signals():
 	if save_file_dialog:
 		save_file_dialog.file_selected.connect(_on_output_file_selected)
 	
+	# Unity相关信号连接
+	if unity_file_button:
+		unity_file_button.pressed.connect(_on_unity_file_button_pressed)
+	if unity_save_as_button:
+		unity_save_as_button.pressed.connect(_on_unity_save_as_button_pressed)
+	
 	if service_config_button:
 		service_config_button.pressed.connect(_on_service_config_button_pressed)
 	
@@ -200,6 +250,42 @@ func _connect_signals():
 		baidu_toggle_button.pressed.connect(_on_toggle_visibility.bind(baidu_secret_key, baidu_toggle_button))
 	if deepseek_toggle_button:
 		deepseek_toggle_button.pressed.connect(_on_toggle_visibility.bind(deepseek_api_key, deepseek_toggle_button))
+	
+	# 翻译模板配置
+	if template_config_button:
+		template_config_button.pressed.connect(_on_template_config_button_pressed)
+	if template_list:
+		template_list.item_selected.connect(_on_template_selected)
+	if add_template_button:
+		add_template_button.pressed.connect(_on_add_template_pressed)
+	if delete_template_button:
+		delete_template_button.pressed.connect(_on_delete_template_pressed)
+	if save_template_button:
+		save_template_button.pressed.connect(_on_save_template_pressed)
+	if reset_template_button:
+		reset_template_button.pressed.connect(_on_reset_template_pressed)
+	if import_template_button:
+		import_template_button.pressed.connect(_on_import_template_pressed)
+	if export_template_button:
+		export_template_button.pressed.connect(_on_export_template_pressed)
+	
+	# 知识库配置
+	if kb_config_button:
+		kb_config_button.pressed.connect(_on_kb_config_button_pressed)
+	if browse_button:
+		browse_button.pressed.connect(_on_browse_button_pressed)
+	if validate_button:
+		validate_button.pressed.connect(_on_validate_button_pressed)
+	if apply_button:
+		apply_button.pressed.connect(_on_apply_kb_config_pressed)
+	if reset_kb_button:
+		reset_kb_button.pressed.connect(_on_reset_kb_config_pressed)
+	if open_folder_button:
+		open_folder_button.pressed.connect(_on_open_folder_pressed)
+	if kb_directory_dialog:
+		kb_directory_dialog.dir_selected.connect(_on_kb_directory_selected)
+	if new_path_input:
+		new_path_input.text_changed.connect(_on_new_path_changed)
 
 ## 填充语言选项
 func _populate_language_options():
@@ -229,6 +315,7 @@ func _populate_language_options():
 func _populate_service_options():
 	_populate_single_service_option(service_option, "基础翻译")
 	_populate_single_service_option(service_option_csv, "CSV翻译")
+	_populate_single_service_option(unity_service_option, "Unity翻译")
 
 ## 填充单个服务选项下拉框
 func _populate_single_service_option(option_button: OptionButton, mode_name: String):
@@ -276,6 +363,8 @@ func _on_translate_button_pressed():
 			await _handle_basic_translation()
 		TranslationMode.GODOT_CSV:
 			await _handle_godot_csv_translation()
+		TranslationMode.UNITY_LOCALIZATION:
+			await _handle_unity_translation()
 
 ## 处理基础文本翻译
 func _handle_basic_translation():
@@ -549,17 +638,21 @@ func _setup_mode_options():
 	mode_option.clear()
 	mode_option.add_item("基础文本翻译", TranslationMode.BASIC)
 	mode_option.add_item("Godot多语言CSV", TranslationMode.GODOT_CSV)
+	mode_option.add_item("Unity多语言文件", TranslationMode.UNITY_LOCALIZATION)
 	mode_option.selected = 0
+
+
 
 ## 更新UI以适应当前模式
 func _update_ui_for_mode():
-	if not basic_settings_container or not godot_settings_container:
+	if not basic_settings_container or not godot_settings_container or not unity_settings_container:
 		return
 	
 	match current_mode:
 		TranslationMode.BASIC:
 			basic_settings_container.visible = true
 			godot_settings_container.visible = false
+			unity_settings_container.visible = false
 			if translate_button:
 				translate_button.text = "翻译"
 			# 在基础模式下恢复文本框的正常模式
@@ -567,9 +660,18 @@ func _update_ui_for_mode():
 		TranslationMode.GODOT_CSV:
 			basic_settings_container.visible = false
 			godot_settings_container.visible = true
+			unity_settings_container.visible = false
 			if translate_button:
 				translate_button.text = "翻译CSV文件"
 			# 在CSV模式下设置文本框为只读显示模式（未翻译时）
+			_setup_csv_display_mode(false)
+		TranslationMode.UNITY_LOCALIZATION:
+			basic_settings_container.visible = false
+			godot_settings_container.visible = false
+			unity_settings_container.visible = true
+			if translate_button:
+				translate_button.text = "翻译Unity文件"
+			# 在Unity模式下设置文本框为只读显示模式
 			_setup_csv_display_mode(false)
 
 ## 设置CSV显示模式
@@ -612,18 +714,32 @@ func _on_file_button_pressed():
 	if file_dialog:
 		file_dialog.popup_centered()
 
-## CSV文件选择回调
+## CSV/Unity文件选择回调
 func _on_csv_file_selected(path: String):
-	selected_csv_file = path
-	if file_button:
-		file_button.text = path.get_file()
-	
-	# 自动生成默认输出文件名
-	var base_name = path.get_basename()
-	output_csv_file = base_name + "_translated.csv"
-	_update_output_path_display()
-	
-	_show_status("已选择文件: " + path.get_file(), false)
+	match current_mode:
+		TranslationMode.GODOT_CSV:
+			selected_csv_file = path
+			if file_button:
+				file_button.text = path.get_file()
+			
+			# 自动生成默认输出文件名
+			var base_name = path.get_basename()
+			output_csv_file = base_name + "_translated.csv"
+			_update_output_path_display()
+			
+			_show_status("已选择CSV文件: " + path.get_file(), false)
+		
+		TranslationMode.UNITY_LOCALIZATION:
+			selected_unity_file = path
+			if unity_file_button:
+				unity_file_button.text = path.get_file()
+			
+			# 自动生成默认输出文件名
+			var base_name = path.get_basename()
+			output_unity_file = base_name + "_translated.json"
+			_update_unity_output_path_display()
+			
+			_show_status("已选择Unity文件: " + path.get_file(), false)
 
 ## 另存为按钮回调
 func _on_save_as_button_pressed():
@@ -635,9 +751,16 @@ func _on_save_as_button_pressed():
 
 ## 输出文件选择回调
 func _on_output_file_selected(path: String):
-	output_csv_file = path
-	_update_output_path_display()
-	_show_status("输出文件设置为: " + path.get_file(), false)
+	match current_mode:
+		TranslationMode.GODOT_CSV:
+			output_csv_file = path
+			_update_output_path_display()
+			_show_status("CSV输出文件设置为: " + path.get_file(), false)
+		
+		TranslationMode.UNITY_LOCALIZATION:
+			output_unity_file = path
+			_update_unity_output_path_display()
+			_show_status("Unity输出文件设置为: " + path.get_file(), false)
 
 ## 更新输出路径显示
 func _update_output_path_display():
@@ -646,6 +769,14 @@ func _update_output_path_display():
 			output_path_label.text = "请先选择输入文件"
 		else:
 			output_path_label.text = output_csv_file.get_file()
+
+## 更新Unity输出路径显示
+func _update_unity_output_path_display():
+	if unity_output_path_label:
+		if output_unity_file.is_empty():
+			unity_output_path_label.text = "请先选择输入文件"
+		else:
+			unity_output_path_label.text = output_unity_file.get_file()
 
 ## 调试UI节点状态
 func _debug_ui_nodes():
@@ -1343,3 +1474,822 @@ func _update_translation_buttons(translate_enabled: bool, pause_enabled: bool, r
 		resume_button.disabled = not resume_enabled
 	if cancel_button:
 		cancel_button.disabled = not cancel_enabled
+
+# ============================================================================
+# 翻译模板配置功能
+# ============================================================================
+
+## 翻译模板配置按钮回调
+func _on_template_config_button_pressed():
+	if template_config_dialog:
+		_load_template_config()
+		template_config_dialog.popup_centered()
+
+## 加载翻译模板配置到对话框
+func _load_template_config():
+	if not template_list:
+		return
+	
+	# 清空模板列表
+	template_list.clear()
+	
+	# 获取现有模板
+	var translation_config = config_manager.get_translation_config()
+	var templates = translation_config.get("prompt_templates", {})
+	
+	# 添加模板到列表
+	for template_key in templates.keys():
+		var template = templates[template_key]
+		var display_name = template.get("name", template_key)
+		template_list.add_item(display_name)
+		template_list.set_item_metadata(template_list.get_item_count() - 1, template_key)
+	
+	# 清空编辑区域
+	_clear_template_editor()
+	
+	print("✅ 已加载 ", templates.size(), " 个翻译模板")
+
+## 清空模板编辑器
+func _clear_template_editor():
+	if template_name_input:
+		template_name_input.text = ""
+	if template_desc_input:
+		template_desc_input.text = ""
+	if template_system_edit:
+		template_system_edit.text = ""
+	if template_user_edit:
+		template_user_edit.text = ""
+
+## 模板选择回调
+func _on_template_selected(index: int):
+	if not template_list or index < 0:
+		return
+	
+	var template_key = template_list.get_item_metadata(index)
+	if not template_key:
+		return
+	
+	# 加载选中的模板内容
+	var translation_config = config_manager.get_translation_config()
+	var templates = translation_config.get("prompt_templates", {})
+	
+	if templates.has(template_key):
+		var template = templates[template_key]
+		
+		if template_name_input:
+			template_name_input.text = template.get("name", "")
+		if template_desc_input:
+			template_desc_input.text = template.get("description", "")
+		if template_system_edit:
+			template_system_edit.text = template.get("system", "")
+		if template_user_edit:
+			template_user_edit.text = template.get("user_template", "")
+		
+		print("✅ 已加载模板: ", template.get("name", template_key))
+
+## 添加新模板回调
+func _on_add_template_pressed():
+	# 创建新模板
+	var new_template_key = "custom_template_" + str(Time.get_unix_time_from_system())
+	var new_template = {
+		"name": "新模板",
+		"description": "自定义翻译模板",
+		"system": "你是一个专业的翻译专家。请根据要求进行翻译。",
+		"user_template": "请将以下{source_language}文本翻译成{target_language}：\n\n{text}"
+	}
+	
+	# 添加到配置
+	var translation_config = config_manager.get_translation_config()
+	if not translation_config.has("prompt_templates"):
+		translation_config["prompt_templates"] = {}
+	
+	translation_config.prompt_templates[new_template_key] = new_template
+	
+	# 刷新模板列表
+	_load_template_config()
+	
+	# 选中新创建的模板
+	for i in range(template_list.get_item_count()):
+		if template_list.get_item_metadata(i) == new_template_key:
+			template_list.select(i)
+			_on_template_selected(i)
+			break
+	
+	_show_status("已添加新模板，请编辑模板内容", false)
+
+## 删除模板回调
+func _on_delete_template_pressed():
+	if not template_list:
+		return
+	
+	var selected_index = template_list.get_selected_items()
+	if selected_index.is_empty():
+		_show_status("请先选择要删除的模板", true)
+		return
+	
+	var index = selected_index[0]
+	var template_key = template_list.get_item_metadata(index)
+	var template_name = template_list.get_item_text(index)
+	
+	# 确认删除（简单的确认逻辑）
+	print("🗑️ 删除模板: ", template_name, " (", template_key, ")")
+	
+	# 从配置中删除
+	var translation_config = config_manager.get_translation_config()
+	if translation_config.has("prompt_templates") and translation_config.prompt_templates.has(template_key):
+		translation_config.prompt_templates.erase(template_key)
+		
+		# 刷新模板列表
+		_load_template_config()
+		
+		_show_status("已删除模板: " + template_name, false)
+	else:
+		_show_status("删除失败: 模板不存在", true)
+
+## 保存模板回调
+func _on_save_template_pressed():
+	if not template_list:
+		return
+	
+	var selected_index = template_list.get_selected_items()
+	if selected_index.is_empty():
+		_show_status("请先选择要保存的模板", true)
+		return
+	
+	# 验证模板内容
+	var template_name = template_name_input.text.strip_edges() if template_name_input else ""
+	var template_desc = template_desc_input.text.strip_edges() if template_desc_input else ""
+	var system_prompt = template_system_edit.text.strip_edges() if template_system_edit else ""
+	var user_template = template_user_edit.text.strip_edges() if template_user_edit else ""
+	
+	if template_name.is_empty():
+		_show_status("请输入模板名称", true)
+		return
+	
+	if system_prompt.is_empty() or user_template.is_empty():
+		_show_status("请输入系统提示词和用户模板", true)
+		return
+	
+	# 获取选中的模板key
+	var index = selected_index[0]
+	var template_key = template_list.get_item_metadata(index)
+	
+	# 更新模板
+	var translation_config = config_manager.get_translation_config()
+	if not translation_config.has("prompt_templates"):
+		translation_config["prompt_templates"] = {}
+	
+	translation_config.prompt_templates[template_key] = {
+		"name": template_name,
+		"description": template_desc,
+		"system": system_prompt,
+		"user_template": user_template
+	}
+	
+	# 保存配置
+	if config_manager.save_config("translation", translation_config):
+		# 刷新模板列表
+		_load_template_config()
+		
+		# 重新选中该模板
+		for i in range(template_list.get_item_count()):
+			if template_list.get_item_metadata(i) == template_key:
+				template_list.select(i)
+				break
+		
+		_show_status("✅ 模板保存成功: " + template_name, false)
+	else:
+		_show_status("❌ 模板保存失败", true)
+
+## 重置模板回调
+func _on_reset_template_pressed():
+	if not template_list:
+		return
+	
+	var selected_index = template_list.get_selected_items()
+	if selected_index.is_empty():
+		_show_status("请先选择要重置的模板", true)
+		return
+	
+	# 清空编辑区域
+	_clear_template_editor()
+	_show_status("已重置模板编辑区域", false)
+
+## 导入模板回调
+func _on_import_template_pressed():
+	# 创建文件对话框用于导入
+	var import_dialog = FileDialog.new()
+	import_dialog.title = "导入翻译模板"
+	import_dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+	import_dialog.access = FileDialog.ACCESS_FILESYSTEM
+	import_dialog.add_filter("*.json", "JSON模板文件")
+	
+	# 添加到场景树
+	add_child(import_dialog)
+	
+	# 连接信号
+	import_dialog.file_selected.connect(_on_template_file_imported)
+	import_dialog.popup_centered(Vector2i(800, 600))
+
+## 导出模板回调
+func _on_export_template_pressed():
+	if not template_list:
+		return
+	
+	var selected_index = template_list.get_selected_items()
+	if selected_index.is_empty():
+		_show_status("请先选择要导出的模板", true)
+		return
+	
+	# 获取选中的模板
+	var index = selected_index[0]
+	var template_key = template_list.get_item_metadata(index)
+	var template_name = template_list.get_item_text(index)
+	
+	var translation_config = config_manager.get_translation_config()
+	var templates = translation_config.get("prompt_templates", {})
+	
+	if not templates.has(template_key):
+		_show_status("导出失败: 模板不存在", true)
+		return
+	
+	# 创建文件对话框用于导出
+	var export_dialog = FileDialog.new()
+	export_dialog.title = "导出翻译模板"
+	export_dialog.file_mode = FileDialog.FILE_MODE_SAVE_FILE
+	export_dialog.access = FileDialog.ACCESS_FILESYSTEM
+	export_dialog.add_filter("*.json", "JSON模板文件")
+	export_dialog.current_file = template_name.replace(" ", "_") + ".json"
+	
+	# 添加到场景树
+	add_child(export_dialog)
+	
+	# 连接信号并传递模板数据
+	export_dialog.file_selected.connect(_on_template_file_exported.bind(templates[template_key]))
+	export_dialog.popup_centered(Vector2i(800, 600))
+
+## 模板文件导入回调
+func _on_template_file_imported(file_path: String):
+	var file = FileAccess.open(file_path, FileAccess.READ)
+	if not file:
+		_show_status("❌ 无法打开文件: " + file_path, true)
+		return
+	
+	var json_string = file.get_as_text()
+	file.close()
+	
+	var json = JSON.new()
+	var parse_result = json.parse(json_string)
+	
+	if parse_result != OK:
+		_show_status("❌ JSON格式错误: " + json.get_error_message(), true)
+		return
+	
+	var template_data = json.data
+	
+	# 验证模板数据格式
+	if not template_data is Dictionary:
+		_show_status("❌ 模板格式错误: 根对象必须是字典", true)
+		return
+	
+	if not template_data.has("name") or not template_data.has("system") or not template_data.has("user_template"):
+		_show_status("❌ 模板格式错误: 缺少必要字段(name, system, user_template)", true)
+		return
+	
+	# 创建新的模板key
+	var new_template_key = "imported_" + str(Time.get_unix_time_from_system())
+	
+	# 添加到配置
+	var translation_config = config_manager.get_translation_config()
+	if not translation_config.has("prompt_templates"):
+		translation_config["prompt_templates"] = {}
+	
+	translation_config.prompt_templates[new_template_key] = template_data
+	
+	# 保存配置
+	if config_manager.save_config("translation", translation_config):
+		# 刷新模板列表
+		_load_template_config()
+		
+		# 选中新导入的模板
+		for i in range(template_list.get_item_count()):
+			if template_list.get_item_metadata(i) == new_template_key:
+				template_list.select(i)
+				_on_template_selected(i)
+				break
+		
+		_show_status("✅ 模板导入成功: " + template_data.get("name", "未命名"), false)
+	else:
+		_show_status("❌ 模板导入失败", true)
+
+## 模板文件导出回调
+func _on_template_file_exported(template_data: Dictionary, file_path: String):
+	var file = FileAccess.open(file_path, FileAccess.WRITE)
+	if not file:
+		_show_status("❌ 无法创建文件: " + file_path, true)
+		return
+	
+	var json_string = JSON.stringify(template_data, "\t")
+	file.store_string(json_string)
+	file.close()
+	
+	_show_status("✅ 模板导出成功: " + file_path.get_file(), false)
+
+# ============================================================================
+# 知识库配置功能
+# ============================================================================
+
+## 知识库配置按钮回调
+func _on_kb_config_button_pressed():
+	if kb_config_dialog:
+		_load_kb_config()
+		kb_config_dialog.popup_centered()
+
+## 加载知识库配置到对话框
+func _load_kb_config():
+	var kb_config = config_manager.get_knowledge_base_config()
+	
+	# 显示当前路径
+	if current_path_display:
+		current_path_display.text = kb_config.get("root_path", "data/knowledge_base/")
+	
+	# 加载高级设置
+	if cache_size_spinbox:
+		cache_size_spinbox.value = kb_config.get("max_cache_size", 1000)
+	if similarity_spinbox:
+		similarity_spinbox.value = kb_config.get("similarity_threshold", 0.6)
+	if auto_backup_check:
+		auto_backup_check.button_pressed = kb_config.get("auto_backup", true)
+	
+	# 重置状态
+	if apply_button:
+		apply_button.disabled = true
+	if kb_status_label:
+		kb_status_label.text = "路径状态: 未验证"
+		kb_status_label.modulate = Color(0.7, 0.7, 0.7, 1)
+
+## 浏览按钮回调
+func _on_browse_button_pressed():
+	if kb_directory_dialog:
+		kb_directory_dialog.popup_centered()
+
+## 知识库目录选择回调
+func _on_kb_directory_selected(dir_path: String):
+	if new_path_input:
+		new_path_input.text = dir_path
+		_on_new_path_changed(dir_path)
+
+## 新路径输入变化回调
+func _on_new_path_changed(new_text: String):
+	# 当路径改变时，重置验证状态并启用验证按钮
+	if validate_button:
+		validate_button.disabled = false
+	if apply_button:
+		apply_button.disabled = true
+	if kb_status_label:
+		kb_status_label.text = "路径状态: 未验证"
+		kb_status_label.modulate = Color(0.7, 0.7, 0.7, 1)
+
+## 验证路径按钮回调
+func _on_validate_button_pressed():
+	var path = new_path_input.text.strip_edges() if new_path_input else ""
+	
+	if path.is_empty():
+		_update_kb_status("路径不能为空", true)
+		return
+	
+	# 创建临时的知识库管理器进行验证
+	var temp_kb = KnowledgeBaseManager.new()
+	var validation_result = temp_kb.validate_path(path)
+	
+	if validation_result.valid:
+		var status_text = "✅ 路径有效"
+		if validation_result.has_data:
+			status_text += " (包含现有数据)"
+		else:
+			status_text += " (空目录)"
+		
+		_update_kb_status(status_text, false)
+		
+		if apply_button:
+			apply_button.disabled = false
+	else:
+		_update_kb_status("❌ " + validation_result.error, true)
+
+## 更新知识库状态显示
+func _update_kb_status(message: String, is_error: bool):
+	if kb_status_label:
+		kb_status_label.text = "路径状态: " + message
+		kb_status_label.modulate = Color.RED if is_error else Color.GREEN
+
+## 应用知识库配置回调
+func _on_apply_kb_config_pressed():
+	var new_path = new_path_input.text.strip_edges() if new_path_input else ""
+	var migrate_data = migrate_data_check.button_pressed if migrate_data_check else true
+	
+	if new_path.is_empty():
+		_show_status("请输入有效的知识库路径", true)
+		return
+	
+	# 保存高级设置
+	var cache_size = cache_size_spinbox.value if cache_size_spinbox else 1000
+	var similarity_threshold = similarity_spinbox.value if similarity_spinbox else 0.6
+	
+	config_manager.set_knowledge_base_cache_size(int(cache_size))
+	config_manager.set_knowledge_base_similarity_threshold(similarity_threshold)
+	
+	# 创建知识库管理器并更改路径
+	var kb_manager = KnowledgeBaseManager.new()
+	kb_manager.initialize(config_manager)
+	
+	var result = kb_manager.change_knowledge_base_path(new_path, migrate_data)
+	
+	if result.success:
+		var message = "✅ 知识库路径更新成功"
+		if result.migrated_files > 0:
+			message += "\n已迁移 " + str(result.migrated_files) + " 个文件"
+		
+		_show_status(message, false)
+		
+		# 更新显示
+		_load_kb_config()
+		
+		if kb_config_dialog:
+			kb_config_dialog.hide()
+	else:
+		_show_status("❌ 路径更新失败: " + result.error, true)
+
+## 重置知识库配置回调
+func _on_reset_kb_config_pressed():
+	var default_path = "data/knowledge_base/"
+	
+	# 重置为默认值
+	if new_path_input:
+		new_path_input.text = default_path
+	if cache_size_spinbox:
+		cache_size_spinbox.value = 1000
+	if similarity_spinbox:
+		similarity_spinbox.value = 0.6
+	if auto_backup_check:
+		auto_backup_check.button_pressed = true
+	if migrate_data_check:
+		migrate_data_check.button_pressed = true
+	
+	# 重置状态
+	if apply_button:
+		apply_button.disabled = true
+	if kb_status_label:
+		kb_status_label.text = "路径状态: 未验证"
+		kb_status_label.modulate = Color(0.7, 0.7, 0.7, 1)
+	
+	_show_status("已重置为默认配置", false)
+
+## 打开文件夹按钮回调
+func _on_open_folder_pressed():
+	var current_path = current_path_display.text if current_path_display else "data/knowledge_base/"
+	
+	# 确保目录存在
+	if not DirAccess.dir_exists_absolute(current_path):
+		DirAccess.make_dir_recursive_absolute(current_path)
+	
+	# 在不同操作系统上打开文件夹
+	match OS.get_name():
+		"Windows":
+			OS.execute("explorer", [current_path.replace("/", "\\")])
+		"macOS":
+			OS.execute("open", [current_path])
+		"Linux", "FreeBSD", "NetBSD", "OpenBSD", "BSD":
+			OS.execute("xdg-open", [current_path])
+		_:
+			_show_status("当前操作系统不支持直接打开文件夹", true)
+			return
+	
+	_show_status("已打开知识库文件夹", false)
+
+# ============================================================================
+# Unity多语言翻译功能
+# ============================================================================
+
+## Unity文件选择按钮回调
+func _on_unity_file_button_pressed():
+	if file_dialog:
+		# 重新配置文件对话框用于Unity JSON文件
+		file_dialog.clear_filters()
+		file_dialog.add_filter("*.json", "Unity Localization JSON文件")
+		file_dialog.title = "选择Unity Localization Package文件"
+		file_dialog.popup_centered()
+
+## Unity文件另存为按钮回调
+func _on_unity_save_as_button_pressed():
+	if save_file_dialog:
+		# 配置保存对话框
+		save_file_dialog.clear_filters()
+		save_file_dialog.add_filter("*.json", "Unity Localization JSON文件")
+		save_file_dialog.title = "保存翻译后的Unity文件"
+		if not output_unity_file.is_empty():
+			save_file_dialog.current_file = output_unity_file.get_file()
+		save_file_dialog.popup_centered()
+
+## 处理Unity翻译
+func _handle_unity_translation():
+	# 验证输入
+	if selected_unity_file.is_empty():
+		_show_status("请先选择Unity Localization文件", true)
+		return
+	
+	if output_unity_file.is_empty():
+		_show_status("请设置输出文件路径", true)
+		return
+	
+	var source_lang = unity_source_lang_input.text.strip_edges() if unity_source_lang_input else ""
+	var target_langs_text = unity_target_langs_input.text.strip_edges() if unity_target_langs_input else ""
+	
+	# 使用默认值
+	if source_lang.is_empty():
+		source_lang = "en"
+	
+	if target_langs_text.is_empty():
+		target_langs_text = "zh-CN,ja,ko,ru"
+	
+	_show_status("Unity设置 - 源语言: " + source_lang + " → 目标语言: " + target_langs_text, false)
+	
+	# 解析目标语言列表
+	var target_languages = []
+	for lang in target_langs_text.split(","):
+		var clean_lang = lang.strip_edges()
+		if clean_lang.length() > 0:
+			target_languages.append(clean_lang)
+	
+	if target_languages.is_empty():
+		_show_status("请输入有效的目标语言代码", true)
+		return
+	
+	var service_name = _get_selected_unity_service()
+	if service_name.is_empty():
+		return
+	
+	# 开始翻译
+	_show_status("正在翻译Unity Localization文件...", false)
+	_update_translation_buttons(false, true, false, true)
+	
+	# 设置Unity模式下的UI显示
+	_setup_csv_display_mode(true)
+	
+	# 显示进度
+	if progress_bar:
+		progress_bar.value = 0
+		progress_bar.visible = true
+	
+	if current_translation_container:
+		current_translation_container.visible = true
+	
+	# 清空文本框准备显示Unity翻译内容
+	if source_text_edit:
+		source_text_edit.text = ""
+		source_text_edit.placeholder_text = "Unity翻译原文累积显示"
+	
+	if target_text_edit:
+		target_text_edit.text = ""
+		target_text_edit.placeholder_text = "Unity翻译译文累积显示"
+	
+	# 处理Unity JSON文件
+	var result = await _process_unity_localization_file(selected_unity_file, output_unity_file, source_lang, target_languages, service_name)
+	
+	if result.success:
+		_show_status("✅ Unity翻译完成！已翻译 " + str(result.translated_count) + " 项", false)
+	else:
+		_show_status("❌ Unity翻译失败: " + result.error, true)
+	
+	_update_translation_buttons(true, false, false, false)
+	
+	# 恢复UI状态
+	if current_mode == TranslationMode.UNITY_LOCALIZATION:
+		_setup_csv_display_mode(false)
+	
+	if current_translation_container:
+		current_translation_container.visible = false
+	
+	if progress_bar:
+		progress_bar.visible = false
+
+## 获取选中的Unity翻译服务
+func _get_selected_unity_service() -> String:
+	if not unity_service_option or unity_service_option.selected < 0:
+		return "openai"
+	
+	if not translation_service or not translation_service.ai_service_manager:
+		_show_status("翻译服务未初始化，请先配置AI服务", true)
+		return ""
+	
+	var ai_manager = translation_service.ai_service_manager
+	var available_services = ai_manager.get_available_services()
+	
+	if available_services.is_empty():
+		_show_status("没有可用的AI服务，请先配置API密钥", true)
+		return ""
+	elif unity_service_option.selected < available_services.size():
+		return available_services[unity_service_option.selected].name
+	
+	return available_services[0].name if not available_services.is_empty() else ""
+
+## 处理Unity Localization Package文件
+func _process_unity_localization_file(input_file: String, output_file: String, source_lang: String, target_languages: Array, service_name: String) -> Dictionary:
+	var result = {"success": false, "error": "", "translated_count": 0}
+	
+	# 读取Unity JSON文件
+	var file = FileAccess.open(input_file, FileAccess.READ)
+	if not file:
+		result.error = "无法打开输入文件"
+		return result
+	
+	var content = file.get_as_text()
+	file.close()
+	
+	# 解析JSON
+	var json = JSON.new()
+	var parse_result = json.parse(content)
+	if parse_result != OK:
+		result.error = "JSON格式错误: " + json.get_error_message()
+		return result
+	
+	var unity_data = json.data
+	
+	# 验证Unity Localization格式
+	if not _validate_unity_localization_format(unity_data):
+		result.error = "不是有效的Unity Localization Package格式"
+		return result
+	
+	# 提取和翻译文本
+	var translation_result = await _translate_unity_entries(unity_data, source_lang, target_languages, service_name)
+	if not translation_result.success:
+		result.error = translation_result.error
+		return result
+	
+	result.translated_count = translation_result.translated_count
+	
+	# 保存翻译后的文件
+	var output_json = JSON.stringify(unity_data, "\t")
+	var output_file_handle = FileAccess.open(output_file, FileAccess.WRITE)
+	if not output_file_handle:
+		result.error = "无法创建输出文件"
+		return result
+	
+	output_file_handle.store_string(output_json)
+	output_file_handle.close()
+	
+	result.success = true
+	return result
+
+## 验证Unity Localization格式
+func _validate_unity_localization_format(data: Dictionary) -> bool:
+	# 检查是否包含Unity Localization的基本结构
+	if data.has("StringDatabase"):
+		# Unity Localization Package格式
+		var string_db = data.StringDatabase
+		return string_db.has("Tables") and string_db.Tables is Array
+	elif data.has("Tables"):
+		# 简化的Unity格式
+		return data.Tables is Array
+	elif data.has("entries") or data.has("translations"):
+		# 自定义Unity格式
+		return true
+	
+	return false
+
+## 翻译Unity条目
+func _translate_unity_entries(unity_data: Dictionary, source_lang: String, target_languages: Array, service_name: String) -> Dictionary:
+	var result = {"success": false, "error": "", "translated_count": 0}
+	var entries_to_translate = []
+	
+	# 提取所有需要翻译的文本条目
+	_extract_unity_text_entries(unity_data, source_lang, entries_to_translate)
+	
+	if entries_to_translate.is_empty():
+		result.error = "未找到源语言 '" + source_lang + "' 的文本条目"
+		return result
+	
+	print("📝 找到 ", entries_to_translate.size(), " 个需要翻译的条目")
+	
+	# 逐个翻译条目
+	var translated_count = 0
+	var total_entries = entries_to_translate.size()
+	
+	for i in range(total_entries):
+		var entry = entries_to_translate[i]
+		var original_text = entry.text
+		
+		# 发送翻译项目开始信号
+		if translation_service:
+			translation_service.translation_item_started.emit({
+				"index": i,
+				"total": total_entries,
+				"text": original_text,
+				"source_lang": source_lang,
+				"target_lang": target_languages[0] if target_languages.size() > 0 else "zh-CN"
+			})
+		
+		# 翻译到各目标语言（使用Unity专用模板）
+		for target_lang in target_languages:
+			var translation_result = await translation_service.translate_text(original_text, source_lang, target_lang, service_name)
+			
+			if translation_result.success:
+				# 将翻译结果写入Unity数据结构
+				_set_unity_translation(unity_data, entry.key, target_lang, translation_result.translated_text)
+				translated_count += 1
+				
+				# 发送翻译完成信号
+				if translation_service:
+					translation_service.translation_item_completed.emit({
+						"index": i,
+						"total": total_entries,
+						"original_text": original_text,
+						"translated_text": translation_result.translated_text,
+						"success": true,
+						"action": "新翻译"
+					})
+				
+				# 显示翻译结果
+				if source_text_edit and target_text_edit:
+					source_text_edit.text += "[%d] %s\n" % [i + 1, original_text]
+					target_text_edit.text += "[%d] %s (%s)\n" % [i + 1, translation_result.translated_text, target_lang]
+			else:
+				print("❌ 翻译失败: ", translation_result.error)
+		
+		# 更新进度
+		var progress = float(i + 1) / float(total_entries)
+		if translation_service:
+			translation_service.translation_progress.emit(progress)
+	
+	result.success = true
+	result.translated_count = translated_count
+	return result
+
+## 提取Unity文本条目
+func _extract_unity_text_entries(unity_data: Dictionary, source_lang: String, entries_array: Array):
+	if unity_data.has("StringDatabase"):
+		# Unity Localization Package格式
+		var tables = unity_data.StringDatabase.get("Tables", [])
+		for table in tables:
+			_extract_from_unity_table(table, source_lang, entries_array)
+	elif unity_data.has("Tables"):
+		# 简化格式
+		for table in unity_data.Tables:
+			_extract_from_unity_table(table, source_lang, entries_array)
+
+## 从Unity表格中提取条目
+func _extract_from_unity_table(table: Dictionary, source_lang: String, entries_array: Array):
+	var table_data = table.get("TableData", [])
+	
+	for locale_data in table_data:
+		if locale_data.get("LocaleIdentifier", "") == source_lang:
+			var entries = locale_data.get("Entries", [])
+			for entry in entries:
+				var key_id = entry.get("Id", "")
+				var text = entry.get("Value", "")
+				
+				if not text.is_empty():
+					entries_array.append({
+						"key": str(key_id),
+						"text": text,
+						"table": table.get("TableCollectionName", "")
+					})
+
+## 设置Unity翻译结果
+func _set_unity_translation(unity_data: Dictionary, key_id: String, target_lang: String, translated_text: String):
+	var tables = []
+	
+	if unity_data.has("StringDatabase"):
+		tables = unity_data.StringDatabase.get("Tables", [])
+	elif unity_data.has("Tables"):
+		tables = unity_data.Tables
+	
+	for table in tables:
+		var table_data = table.get("TableData", [])
+		var target_locale_found = false
+		
+		# 查找目标语言的locale数据
+		for locale_data in table_data:
+			if locale_data.get("LocaleIdentifier", "") == target_lang:
+				target_locale_found = true
+				var entries = locale_data.get("Entries", [])
+				
+				# 查找匹配的条目ID并更新
+				var entry_found = false
+				for entry in entries:
+					if str(entry.get("Id", "")) == key_id:
+						entry["Value"] = translated_text
+						entry_found = true
+						break
+				
+				# 如果没找到条目，创建新的
+				if not entry_found:
+					entries.append({"Id": int(key_id), "Value": translated_text})
+				break
+		
+		# 如果没找到目标语言的locale，创建新的
+		if not target_locale_found:
+			var new_locale = {
+				"LocaleIdentifier": target_lang,
+				"Entries": [{"Id": int(key_id), "Value": translated_text}]
+			}
+			table_data.append(new_locale)

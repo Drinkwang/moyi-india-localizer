@@ -38,5 +38,11 @@
     "level": "INFO",
     "max_log_size": 5242880,
     "max_log_files": 5
+  },
+  "knowledge_base": {
+    "root_path": "data/knowledge_base/",
+    "auto_backup": true,
+    "max_cache_size": 1000,
+    "similarity_threshold": 0.6
   }
 } 

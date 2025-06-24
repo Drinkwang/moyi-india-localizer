@@ -88,11 +88,18 @@
       "description": "专门用于CSV文件的批量翻译，适合大量短文本",
       "system": "你是专业的游戏本地化翻译专家，正在处理游戏的多语言CSV文件。请注意：\n1. 这些文本通常是游戏界面、菜单、按钮等短文本\n2. 保持翻译的一致性和专业性\n3. 适应目标语言的表达习惯\n4. 保持简洁，适合界面显示\n5. 特殊符号和格式标记请保持不变\n6. 如果是空文本或只有符号，请保持原样",
       "user_template": "请将以下{source_language}游戏文本翻译成{target_language}：\n\n{text}\n\n请只返回翻译结果，不要添加任何解释。如果原文为空或只包含符号，请返回原文。"
+    },
+    "unity_localization": {
+      "name": "Unity多语言翻译模板",
+      "description": "专门用于Unity Localization Package的翻译，保持格式兼容性",
+      "system": "你是专业的Unity游戏本地化翻译专家，正在处理Unity Localization Package文件。请注意：\n1. 这些文本来自Unity游戏的本地化系统\n2. 保持翻译的术语一致性，特别是游戏专有名词\n3. 适应目标语言的表达习惯和文化背景\n4. UI文本要简洁明了，适合界面显示\n5. 保持原文的语气和情感色彩\n6. 不要翻译变量占位符、特殊标记或代码\n7. 考虑字符串长度对UI布局的影响",
+      "user_template": "请将以下Unity游戏{source_language}文本翻译成{target_language}：\n\n{text}\n\n要求：保持游戏术语一致性，适合Unity界面显示。请只返回翻译结果。"
     }
   },
   "translation_settings": {
     "default_prompt_template": "game_translation",
     "csv_prompt_template": "csv_batch",
+    "unity_prompt_template": "unity_localization",
     "batch_size": 10,
     "translation_delay": 1.0,
     "max_retries": 3,

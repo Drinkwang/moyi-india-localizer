@@ -71,10 +71,10 @@ translate/
 │   ├── images/           # 图片
 │   └── sounds/           # 音效
 └── data/                 # 数据目录
-    ├── cache/            # 缓存文件
-    ├── logs/             # 日志文件
-    ├── backups/          # 备份文件
-    └── user_settings/    # 用户设置
+	├── cache/            # 缓存文件
+	├── logs/             # 日志文件
+	├── backups/          # 备份文件
+	└── user_settings/    # 用户设置
 ```
 
 ## 开发环境
@@ -123,12 +123,12 @@ translate/
 ```json
 {
   "services": {
-    "openai": {
-      "enabled": true,
-      "api_key": "your-openai-api-key",
-      "base_url": "https://api.openai.com/v1",
-      "model": "gpt-3.5-turbo"
-    }
+	"openai": {
+	  "enabled": true,
+	  "api_key": "your-openai-api-key",
+	  "base_url": "https://api.openai.com/v1",
+	  "model": "gpt-3.5-turbo"
+	}
   }
 }
 ```

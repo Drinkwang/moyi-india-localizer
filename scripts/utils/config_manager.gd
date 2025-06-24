@@ -125,6 +125,48 @@ func get_supported_languages() -> Array:
 	
 	return final_languages
 
+## 获取知识库配置
+func get_knowledge_base_config() -> Dictionary:
+	return app_config.get("knowledge_base", {
+		"root_path": "data/knowledge_base/",
+		"auto_backup": true,
+		"max_cache_size": 1000,
+		"similarity_threshold": 0.6
+	})
+
+## 设置知识库根路径
+func set_knowledge_base_root_path(path: String) -> bool:
+	if not app_config.has("knowledge_base"):
+		app_config["knowledge_base"] = {}
+	
+	# 确保路径以/结尾
+	if not path.ends_with("/"):
+		path += "/"
+	
+	app_config.knowledge_base.root_path = path
+	return save_config("app", app_config)
+
+## 获取知识库根路径
+func get_knowledge_base_root_path() -> String:
+	var kb_config = get_knowledge_base_config()
+	return kb_config.get("root_path", "data/knowledge_base/")
+
+## 设置知识库相似度阈值
+func set_knowledge_base_similarity_threshold(threshold: float) -> bool:
+	if not app_config.has("knowledge_base"):
+		app_config["knowledge_base"] = {}
+	
+	app_config.knowledge_base.similarity_threshold = threshold
+	return save_config("app", app_config)
+
+## 设置知识库缓存大小
+func set_knowledge_base_cache_size(size: int) -> bool:
+	if not app_config.has("knowledge_base"):
+		app_config["knowledge_base"] = {}
+	
+	app_config.knowledge_base.max_cache_size = size
+	return save_config("app", app_config)
+
 ## 获取语言名称映射（用于AI服务）
 func get_language_name_map() -> Dictionary:
 	var languages = get_supported_languages()
