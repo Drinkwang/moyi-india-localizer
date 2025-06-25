@@ -40,6 +40,7 @@
     "max_log_files": 5
   },
   "knowledge_base": {
+    "enabled": false,
     "root_path": "data/knowledge_base/",
     "auto_backup": true,
     "max_cache_size": 1000,

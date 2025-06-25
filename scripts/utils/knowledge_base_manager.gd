@@ -28,6 +28,11 @@ func initialize(config_manager: ConfigManager = null):
 	else:
 		_config_manager = ConfigManager.new()
 	
+	# 检查知识库是否启用
+	if not _config_manager.is_knowledge_base_enabled():
+		print("ℹ️ 知识库功能已禁用，跳过初始化")
+		return
+	
 	_update_paths()
 	_ensure_directories()
 	_load_cache()
@@ -206,6 +211,10 @@ func _update_index(terms: Array, category: String):
 
 ## 智能检索术语
 func search_terms(query: String, max_results: int = 5) -> Array:
+	# 检查知识库是否启用
+	if not _config_manager or not _config_manager.is_knowledge_base_enabled():
+		return []
+	
 	var results = []
 	var query_lower = query.to_lower()
 	
@@ -265,6 +274,10 @@ func _calculate_similarity(str1: String, str2: String) -> float:
 
 ## 为翻译增强提示
 func enhance_prompt(source_text: String, source_lang: String, target_lang: String, base_prompt: String) -> String:
+	# 检查知识库是否启用
+	if not _config_manager or not _config_manager.is_knowledge_base_enabled():
+		return base_prompt
+	
 	var search_results = search_terms(source_text, 3)
 	
 	if search_results.is_empty():

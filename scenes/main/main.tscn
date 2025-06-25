@@ -95,6 +95,17 @@ text = "翻译服务:"
 [node name="ServiceOption" type="OptionButton" parent="VBoxContainer/SettingsContainer/BasicSettingsContainer/ServiceContainer"]
 layout_mode = 2
 
+[node name="TemplateContainer" type="VBoxContainer" parent="VBoxContainer/SettingsContainer/BasicSettingsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TemplateLabel" type="Label" parent="VBoxContainer/SettingsContainer/BasicSettingsContainer/TemplateContainer"]
+layout_mode = 2
+text = "翻译模板:"
+
+[node name="TemplateOption" type="OptionButton" parent="VBoxContainer/SettingsContainer/BasicSettingsContainer/TemplateContainer"]
+layout_mode = 2
+
 [node name="GodotSettingsContainer" type="VBoxContainer" parent="VBoxContainer/SettingsContainer"]
 visible = false
 layout_mode = 2
@@ -140,6 +151,18 @@ size_flags_horizontal = 3
 text = "翻译服务:"
 
 [node name="ServiceOptionCSV" type="OptionButton" parent="VBoxContainer/SettingsContainer/GodotSettingsContainer/ServiceContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TemplateContainer" type="HBoxContainer" parent="VBoxContainer/SettingsContainer/GodotSettingsContainer"]
+layout_mode = 2
+
+[node name="TemplateLabel" type="Label" parent="VBoxContainer/SettingsContainer/GodotSettingsContainer/TemplateContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "翻译模板:"
+
+[node name="TemplateOptionCSV" type="OptionButton" parent="VBoxContainer/SettingsContainer/GodotSettingsContainer/TemplateContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -214,6 +237,18 @@ size_flags_horizontal = 3
 text = "翻译服务:"
 
 [node name="UnityServiceOption" type="OptionButton" parent="VBoxContainer/SettingsContainer/UnitySettingsContainer/UnityServiceContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="UnityTemplateContainer" type="HBoxContainer" parent="VBoxContainer/SettingsContainer/UnitySettingsContainer"]
+layout_mode = 2
+
+[node name="UnityTemplateLabel" type="Label" parent="VBoxContainer/SettingsContainer/UnitySettingsContainer/UnityTemplateContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "翻译模板:"
+
+[node name="TemplateOptionUnity" type="OptionButton" parent="VBoxContainer/SettingsContainer/UnitySettingsContainer/UnityTemplateContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -783,6 +818,18 @@ offset_bottom = -49.0
 layout_mode = 2
 text = "知识库路径配置"
 horizontal_alignment = 1
+
+[node name="EnableContainer" type="VBoxContainer" parent="KnowledgeBaseConfigDialog/VBoxContainer"]
+layout_mode = 2
+
+[node name="KnowledgeBaseEnabledCheck" type="CheckBox" parent="KnowledgeBaseConfigDialog/VBoxContainer/EnableContainer"]
+layout_mode = 2
+text = "启用知识库功能"
+
+[node name="EnableInfoLabel" type="Label" parent="KnowledgeBaseConfigDialog/VBoxContainer/EnableContainer"]
+modulate = Color(0.6, 0.6, 0.6, 1)
+layout_mode = 2
+text = "开启后可以通过本地文档库增强翻译质量（无需增加模型上下文）"
 
 [node name="HSeparator" type="HSeparator" parent="KnowledgeBaseConfigDialog/VBoxContainer"]
 layout_mode = 2

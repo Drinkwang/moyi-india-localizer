@@ -65,6 +65,39 @@ func translate_text(text: String, source_lang: String, target_lang: String, serv
 	
 	return result
 
+## 使用指定模板翻译文本
+func translate_text_with_template(text: String, source_lang: String, target_lang: String, service_name: String = "", template_name: String = "") -> Dictionary:
+	if text.is_empty():
+		return {"success": false, "error": "文本为空"}
+	
+	# 检查缓存（包含模板信息）
+	var cache_key = _generate_cache_key_with_template(text, source_lang, target_lang, template_name)
+	var cached_result = cache_manager.get_translation(cache_key)
+	if cached_result:
+		return {"success": true, "translated_text": cached_result}
+	
+	# 获取AI服务
+	var service = ai_service_manager.get_service(service_name)
+	if not service:
+		return {"success": false, "error": "AI服务不可用"}
+	
+	# 执行翻译（传递模板名称）
+	var result = await service.translate_with_template(text, source_lang, target_lang, template_name)
+	
+	if result.success:
+		# 缓存结果
+		cache_manager.save_translation(cache_key, result.translated_text)
+		translation_completed.emit(result)
+	else:
+		translation_failed.emit(result.error)
+	
+	return result
+
+## 生成包含模板信息的缓存键
+func _generate_cache_key_with_template(text: String, source_lang: String, target_lang: String, template_name: String) -> String:
+	var base_key = _generate_cache_key(text, source_lang, target_lang)
+	return base_key + "_" + str(template_name.hash())
+
 ## 暂停翻译
 func pause_translation():
 	if current_state == TranslationState.RUNNING:
@@ -404,7 +437,12 @@ func translate_godot_csv_with_output(file_path: String, output_path: String, sou
 				# 只在每20项输出一次翻译信息
 				if j % 20 == 0:
 					print("  [", j+1, "/", source_texts.size(), "] 🔄 翻译: '", source_text.substr(0, 50), "'")
-				result = await translate_text(source_text, source_lang, target_lang, service_name)
+				# 检查是否有模板参数传递
+				var template_name = current_translation_info.get("template", "")
+				if template_name.is_empty():
+					result = await translate_text(source_text, source_lang, target_lang, service_name)
+				else:
+					result = await translate_text_with_template(source_text, source_lang, target_lang, service_name, template_name)
 				
 				# 减少成功/失败信息的输出频率
 				if not result.get("success", false) or j % 20 == 0:
@@ -540,6 +578,32 @@ func _get_file_processor(file_path: String, file_type: String = "") -> FileProce
 			return GodotCSVProcessor.new()
 		_:
 			return PlainTextProcessor.new()
+
+## 带模板的CSV翻译（包装版本）
+func translate_godot_csv_with_output_and_template(file_path: String, output_path: String, source_lang: String, target_languages: Array, service_name: String = "", template_name: String = "") -> Dictionary:
+	print("🎯 使用模板 '", template_name, "' 进行CSV翻译")
+	
+	# 创建临时的翻译信息，包含模板参数
+	var original_info = current_translation_info.duplicate(true)
+	
+	# 修改current_translation_info以包含模板信息
+	current_translation_info = {
+		"total": 0,
+		"completed": 0,
+		"current_text": "",
+		"source_lang": source_lang,
+		"target_languages": target_languages,
+		"service": service_name,
+		"template": template_name  # 添加模板信息
+	}
+	
+	# 调用原始的CSV翻译方法
+	var result = await translate_godot_csv_with_output(file_path, output_path, source_lang, target_languages, service_name)
+	
+	# 恢复原始翻译信息
+	current_translation_info = original_info
+	
+	return result
 
 ## 生成输出文件路径
 func _generate_output_path(original_path: String, target_lang: String) -> String:

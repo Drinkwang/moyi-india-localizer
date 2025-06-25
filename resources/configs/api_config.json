@@ -19,9 +19,9 @@
 			"temperature": 0.3
 		},
 		"deepseek": {
-			"api_key": "sk-3bb767ca5f4b4d25b4ba59318d796e43",
+			"api_key": "",
 			"base_url": "https://api.deepseek.com",
-			"enabled": true,
+			"enabled": false,
 			"max_tokens": 2000,
 			"model": "deepseek-chat",
 			"name": "DeepSeek",
@@ -37,9 +37,9 @@
 		"openai": {
 			"api_key": "",
 			"base_url": "https://api.openai.com/v1",
-			"enabled": true,
+			"enabled": false,
 			"max_tokens": 2000,
-			"model": "gpt-4o-mini",
+			"model": "gpt-3.5-turbo",
 			"name": "OpenAI",
 			"temperature": 0.3
 		},

@@ -18,6 +18,11 @@ func translate(text: String, source_lang: String, target_lang: String) -> Dictio
 	push_error("translate方法必须由子类实现")
 	return {"success": false, "error": "方法未实现"}
 
+## 使用指定模板翻译文本
+func translate_with_template(text: String, source_lang: String, target_lang: String, template_name: String = "") -> Dictionary:
+	# 默认实现：调用普通翻译方法，由子类重写以支持模板
+	return await translate(text, source_lang, target_lang)
+
 ## 测试连接 - 必须由子类实现
 func test_connection() -> Dictionary:
 	push_error("test_connection方法必须由子类实现")

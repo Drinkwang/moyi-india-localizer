@@ -32,6 +32,7 @@ extends Control
 @onready var language_option_source: OptionButton = $VBoxContainer/SettingsContainer/BasicSettingsContainer/LanguageContainer/LanguageOptionSource
 @onready var language_option_target: OptionButton = $VBoxContainer/SettingsContainer/BasicSettingsContainer/LanguageContainer/LanguageOptionTarget
 @onready var service_option: OptionButton = $VBoxContainer/SettingsContainer/BasicSettingsContainer/ServiceContainer/ServiceOption
+@onready var template_option_basic: OptionButton = $VBoxContainer/SettingsContainer/BasicSettingsContainer/TemplateContainer/TemplateOption
 
 # 新增的UI节点引用
 @onready var mode_option: OptionButton = $VBoxContainer/SettingsContainer/ModeContainer/ModeOption
@@ -44,6 +45,7 @@ extends Control
 @onready var service_config_button: Button = $VBoxContainer/SettingsContainer/ModeContainer/ServiceConfigButton
 @onready var language_config_button: Button = $VBoxContainer/SettingsContainer/ModeContainer/LanguageConfigButton
 @onready var service_option_csv: OptionButton = $VBoxContainer/SettingsContainer/GodotSettingsContainer/ServiceContainer/ServiceOptionCSV
+@onready var template_option_csv: OptionButton = $VBoxContainer/SettingsContainer/GodotSettingsContainer/TemplateContainer/TemplateOptionCSV
 @onready var output_path_label: Label = $VBoxContainer/SettingsContainer/GodotSettingsContainer/OutputContainer/OutputPathLabel
 @onready var save_as_button: Button = $VBoxContainer/SettingsContainer/GodotSettingsContainer/OutputContainer/SaveAsButton
 
@@ -52,6 +54,7 @@ extends Control
 @onready var unity_source_lang_input: LineEdit = $VBoxContainer/SettingsContainer/UnitySettingsContainer/UnityLanguageInputContainer/UnitySourceLangInput
 @onready var unity_target_langs_input: LineEdit = $VBoxContainer/SettingsContainer/UnitySettingsContainer/UnityLanguageInputContainer/UnityTargetLangsInput
 @onready var unity_service_option: OptionButton = $VBoxContainer/SettingsContainer/UnitySettingsContainer/UnityServiceContainer/UnityServiceOption
+@onready var template_option_unity: OptionButton = $VBoxContainer/SettingsContainer/UnitySettingsContainer/UnityTemplateContainer/TemplateOptionUnity
 @onready var unity_output_path_label: Label = $VBoxContainer/SettingsContainer/UnitySettingsContainer/UnityOutputContainer/UnityOutputPathLabel
 @onready var unity_save_as_button: Button = $VBoxContainer/SettingsContainer/UnitySettingsContainer/UnityOutputContainer/UnitySaveAsButton
 
@@ -113,6 +116,7 @@ extends Control
 # 知识库配置对话框节点引用
 @onready var kb_config_dialog: AcceptDialog = $KnowledgeBaseConfigDialog
 @onready var kb_config_button: Button = $VBoxContainer/SettingsContainer/ModeContainer/KnowledgeBaseConfigButton
+@onready var kb_enabled_check: CheckBox = $KnowledgeBaseConfigDialog/VBoxContainer/EnableContainer/KnowledgeBaseEnabledCheck
 @onready var current_path_display: LineEdit = $KnowledgeBaseConfigDialog/VBoxContainer/CurrentPathContainer/CurrentPathDisplay
 @onready var new_path_input: LineEdit = $KnowledgeBaseConfigDialog/VBoxContainer/NewPathContainer/PathSelectContainer/NewPathInput
 @onready var browse_button: Button = $KnowledgeBaseConfigDialog/VBoxContainer/NewPathContainer/PathSelectContainer/BrowseButton
@@ -157,6 +161,7 @@ func _setup_ui():
 	_setup_mode_options()
 	_populate_language_options()
 	_populate_service_options()
+	_populate_template_options()
 	_load_ui_settings()
 	_update_ui_for_mode()
 	_check_service_status()
@@ -251,6 +256,20 @@ func _connect_signals():
 	if deepseek_toggle_button:
 		deepseek_toggle_button.pressed.connect(_on_toggle_visibility.bind(deepseek_api_key, deepseek_toggle_button))
 	
+	# 连接API密钥输入变化信号，用于实时状态提示
+	if openai_api_key:
+		openai_api_key.text_changed.connect(_on_api_key_changed.bind("openai"))
+	if claude_api_key:
+		claude_api_key.text_changed.connect(_on_api_key_changed.bind("claude"))
+	if baidu_app_id:
+		baidu_app_id.text_changed.connect(_on_api_key_changed.bind("baidu"))
+	if baidu_secret_key:
+		baidu_secret_key.text_changed.connect(_on_api_key_changed.bind("baidu"))
+	if deepseek_api_key:
+		deepseek_api_key.text_changed.connect(_on_api_key_changed.bind("deepseek"))
+	if local_base_url:
+		local_base_url.text_changed.connect(_on_api_key_changed.bind("local"))
+	
 	# 翻译模板配置
 	if template_config_button:
 		template_config_button.pressed.connect(_on_template_config_button_pressed)
@@ -272,6 +291,8 @@ func _connect_signals():
 	# 知识库配置
 	if kb_config_button:
 		kb_config_button.pressed.connect(_on_kb_config_button_pressed)
+	if kb_enabled_check:
+		kb_enabled_check.toggled.connect(_on_kb_enabled_toggled)
 	if browse_button:
 		browse_button.pressed.connect(_on_browse_button_pressed)
 	if validate_button:
@@ -317,6 +338,12 @@ func _populate_service_options():
 	_populate_single_service_option(service_option_csv, "CSV翻译")
 	_populate_single_service_option(unity_service_option, "Unity翻译")
 
+## 填充模板选项
+func _populate_template_options():
+	_populate_single_template_option(template_option_basic, "基础翻译")
+	_populate_single_template_option(template_option_csv, "CSV翻译") 
+	_populate_single_template_option(template_option_unity, "Unity翻译")
+
 ## 填充单个服务选项下拉框
 func _populate_single_service_option(option_button: OptionButton, mode_name: String):
 	if not option_button:
@@ -336,16 +363,101 @@ func _populate_single_service_option(option_button: OptionButton, mode_name: Str
 		option_button.add_item("AI服务管理器未可用", 0)
 		return
 		
-	var available_services = ai_manager.get_available_services()
+	var all_services = ai_manager.get_available_services()
+	var configured_services = ai_manager.get_configured_services()
 	
-	if available_services.is_empty():
-		# 如果没有可用服务，提示用户配置
-		option_button.add_item("⚠️ 请先配置AI服务", 0)
-		print("警告: ", mode_name, " 没有可用的AI服务，请配置API密钥")
+	if all_services.is_empty():
+		option_button.add_item("⚠️ 没有可用服务", 0)
+		print("警告: ", mode_name, " 没有任何AI服务")
+		return
+	
+	print("为 ", mode_name, " 填充服务选项:")
+	print("  总服务数: ", all_services.size())
+	print("  已配置数: ", configured_services.size())
+	
+	# 添加所有服务到选项中，包括未配置的
+	for service_info in all_services:
+		option_button.add_item(service_info.display_name, service_info.name.hash())
+		print("  + ", service_info.display_name)
+	
+	# 如果有已配置的服务，默认选择第一个已配置的
+	if not configured_services.is_empty():
+		var first_configured = configured_services[0]
+		for i in range(option_button.get_item_count()):
+			# 通过服务名称匹配来选择默认项
+			var item_hash = option_button.get_item_id(i)
+			if item_hash == first_configured.name.hash():
+				option_button.selected = i
+				print("  默认选择: ", first_configured.display_name)
+				break
 	else:
-		for service_info in available_services:
-			option_button.add_item(service_info.display_name, service_info.name.hash())
-		print("已为 ", mode_name, " 加载 ", available_services.size(), " 个AI服务")
+		# 如果没有已配置的服务，选择第一个
+		if option_button.get_item_count() > 0:
+			option_button.selected = 0
+			print("  默认选择第一个未配置服务")
+	
+	print("已为 ", mode_name, " 加载 ", all_services.size(), " 个AI服务选项")
+
+## 填充单个模板选项下拉框
+func _populate_single_template_option(option_button: OptionButton, mode_name: String):
+	if not option_button:
+		print("错误: ", mode_name, " template_option 节点未找到")
+		return
+	
+	option_button.clear()
+	
+	if not config_manager:
+		print("错误: config_manager 未初始化")
+		option_button.add_item("配置管理器未可用", 0)
+		return
+	
+	# 获取所有可用的翻译模板
+	var translation_config = config_manager.get_translation_config()
+	var templates = translation_config.get("prompt_templates", {})
+	
+	if templates.is_empty():
+		option_button.add_item("⚠️ 没有可用模板", 0)
+		print("警告: ", mode_name, " 没有可用的翻译模板")
+		return
+	
+	# 添加模板到选项中
+	var template_index = 0
+	for template_key in templates.keys():
+		var template = templates[template_key]
+		var display_name = template.get("name", template_key)
+		option_button.add_item(display_name, template_key.hash())
+		option_button.set_item_metadata(template_index, template_key)
+		template_index += 1
+	
+	# 设置默认选择
+	_set_default_template_selection(option_button, mode_name, templates)
+	
+	print("已为 ", mode_name, " 加载 ", templates.size(), " 个翻译模板")
+
+## 设置默认模板选择
+func _set_default_template_selection(option_button: OptionButton, mode_name: String, templates: Dictionary):
+	var default_template = ""
+	var translation_settings = config_manager.get_translation_config().get("translation_settings", {})
+	
+	# 根据模式选择默认模板
+	match mode_name:
+		"基础翻译":
+			default_template = translation_settings.get("default_prompt_template", "game_translation")
+		"CSV翻译":
+			default_template = translation_settings.get("csv_prompt_template", "csv_batch")
+		"Unity翻译":
+			default_template = translation_settings.get("unity_prompt_template", "unity_localization")
+	
+	# 查找并选择默认模板
+	for i in range(option_button.get_item_count()):
+		var template_key = option_button.get_item_metadata(i)
+		if template_key == default_template:
+			option_button.selected = i
+			break
+	
+	# 如果没找到默认模板，选择第一个
+	if option_button.selected == -1 and option_button.get_item_count() > 0:
+		option_button.selected = 0
 
 ## 加载UI设置
 func _load_ui_settings():
@@ -376,6 +488,7 @@ func _handle_basic_translation():
 	var source_lang = _get_selected_language(language_option_source)
 	var target_lang = _get_selected_language(language_option_target)
 	var service_name = _get_selected_service()
+	var template_name = _get_selected_template()
 	
 	if source_lang.is_empty() or target_lang.is_empty():
 		_show_status("请选择源语言和目标语言", true)
@@ -385,10 +498,10 @@ func _handle_basic_translation():
 		return  # 错误信息已在_get_selected_service()中显示
 	
 	# 开始翻译
-	_show_status("正在翻译...", false)
+	_show_status("正在翻译... (使用模板: " + template_name + ")", false)
 	_update_translation_buttons(false, true, false, true)  # 禁用翻译和恢复，启用暂停和取消
 	
-	var result = await translation_service.translate_text(source_text, source_lang, target_lang, service_name)
+	var result = await translation_service.translate_text_with_template(source_text, source_lang, target_lang, service_name, template_name)
 	
 	if result.success:
 		if target_text_edit:
@@ -446,13 +559,14 @@ func _handle_godot_csv_translation():
 		return
 	
 	var service_name = _get_selected_service()
+	var template_name = _get_selected_template()
 	
 	# 检查服务是否可用
 	if service_name.is_empty():
 		return  # 错误信息已在_get_selected_service()中显示
 	
 	# 开始翻译
-	_show_status("正在翻译Godot CSV文件...", false)
+	_show_status("正在翻译Godot CSV文件... (使用模板: " + template_name + ")", false)
 	_update_translation_buttons(false, true, false, true)  # 禁用翻译和恢复，启用暂停和取消
 	
 	# 设置CSV模式下的UI：将文本框改为只读显示模式
@@ -487,8 +601,8 @@ func _handle_godot_csv_translation():
 	set_meta("last_ui_update_index", -1)
 	print("📝 [性能优化] 已清理缓存，准备开始新的翻译")
 	
-	# 传递输出文件路径给翻译服务
-	var result = await translation_service.translate_godot_csv_with_output(selected_csv_file, output_csv_file, source_lang, target_languages, service_name)
+	# 传递输出文件路径和模板给翻译服务
+	var result = await translation_service.translate_godot_csv_with_output_and_template(selected_csv_file, output_csv_file, source_lang, target_languages, service_name, template_name)
 	
 	if result.success:
 		var added_langs = result.get("languages_added", [])
@@ -559,6 +673,8 @@ func _get_selected_service() -> String:
 	var current_service_option = service_option
 	if current_mode == TranslationMode.GODOT_CSV:
 		current_service_option = service_option_csv
+	elif current_mode == TranslationMode.UNITY_LOCALIZATION:
+		current_service_option = unity_service_option
 	
 	if not current_service_option or current_service_option.selected < 0:
 		return "openai"  # 默认返回openai
@@ -568,16 +684,60 @@ func _get_selected_service() -> String:
 		return ""
 	
 	var ai_manager = translation_service.ai_service_manager
-	var available_services = ai_manager.get_available_services()
+	var all_services = ai_manager.get_available_services()
 	
-	if available_services.is_empty():
-		_show_status("没有可用的AI服务，请先配置API密钥", true)
+	if all_services.is_empty():
+		_show_status("没有任何AI服务，请检查配置文件", true)
 		return ""
-	elif current_service_option.selected < available_services.size():
-		return available_services[current_service_option.selected].name
+	elif current_service_option.selected < all_services.size():
+		var selected_service_info = all_services[current_service_option.selected]
+		var service_name = selected_service_info.name
+		var is_configured = selected_service_info.is_configured
+		
+		if not is_configured:
+			var display_name = selected_service_info.service.get_display_name()
+			_show_status("⚠️ " + display_name + " 尚未配置，请点击「配置AI服务」设置API密钥", true)
+			return ""
+		
+		return service_name
 	
-	# 默认返回第一个可用服务
-	return available_services[0].name if not available_services.is_empty() else ""
+	# 默认返回第一个已配置的服务
+	var configured_services = ai_manager.get_configured_services()
+	if not configured_services.is_empty():
+		return configured_services[0].name
+	else:
+		_show_status("没有已配置的AI服务，请点击「配置AI服务」设置API密钥", true)
+		return ""
+
+## 获取选中的模板
+func _get_selected_template() -> String:
+	# 根据当前模式选择正确的模板选项按钮
+	var current_template_option: OptionButton
+	match current_mode:
+		TranslationMode.BASIC:
+			current_template_option = template_option_basic
+		TranslationMode.GODOT_CSV:
+			current_template_option = template_option_csv
+		TranslationMode.UNITY_LOCALIZATION:
+			current_template_option = template_option_unity
+	
+	if not current_template_option or current_template_option.selected < 0:
+		# 返回默认模板
+		var translation_settings = config_manager.get_translation_config().get("translation_settings", {})
+		match current_mode:
+			TranslationMode.BASIC:
+				return translation_settings.get("default_prompt_template", "game_translation")
+			TranslationMode.GODOT_CSV:
+				return translation_settings.get("csv_prompt_template", "csv_batch")
+			TranslationMode.UNITY_LOCALIZATION:
+				return translation_settings.get("unity_prompt_template", "unity_localization")
+	
+	# 获取选中模板的key
+	var selected_index = current_template_option.selected
+	if selected_index < current_template_option.get_item_count():
+		return current_template_option.get_item_metadata(selected_index)
+	
+	return "game_translation"  # 最终默认值
 
 ## 显示状态信息
 func _show_status(message: String, is_error: bool = false):
@@ -813,6 +973,14 @@ func _debug_ui_nodes():
 	print("deepseek_model: ", deepseek_model != null)
 	print("language_config_button: ", language_config_button != null)
 	print("language_config_dialog: ", language_config_dialog != null)
+	print("--- 模板选择器节点 ---")
+	print("template_option_basic: ", template_option_basic != null)
+	print("template_option_csv: ", template_option_csv != null)
+	print("template_option_unity: ", template_option_unity != null)
+	print("--- 知识库配置节点 ---")
+	print("kb_config_dialog: ", kb_config_dialog != null)
+	print("kb_enabled_check: ", kb_enabled_check != null)
+	print("kb_config_button: ", kb_config_button != null)
 	print("--- 翻译状态显示节点 ---")
 	print("progress_label: ", progress_label != null)
 	print("current_translation_container: ", current_translation_container != null)
@@ -828,6 +996,10 @@ func _on_service_config_button_pressed():
 	if ai_config_dialog:
 		_load_ai_config()
 		_setup_local_provider_options()
+		
+		# 显示配置指导提示
+		_show_status("🔧 配置AI服务：输入API密钥后，记得点击「保存」按钮使配置生效", false)
+		
 		ai_config_dialog.popup_centered()
 
 ## 设置本地模型提供商选项
@@ -898,7 +1070,11 @@ func _load_ai_config():
 
 ## 保存配置按钮回调
 func _on_save_config_pressed():
+	# 显示保存进度
+	_show_status("💾 正在保存配置...", false)
+	
 	var api_config = config_manager.get_api_config()
+	var services_configured = []  # 记录配置的服务
 	
 	# 更新OpenAI配置
 	if api_config.services.has("openai"):
@@ -915,6 +1091,9 @@ func _on_save_config_pressed():
 		api_config.services.openai.api_key = api_key
 		api_config.services.openai.base_url = openai_base_url.text if openai_base_url else "https://api.openai.com/v1"
 		api_config.services.openai.model = openai_model.text if openai_model else "gpt-3.5-turbo"
+		
+		if is_enabled and not api_key.is_empty():
+			services_configured.append("OpenAI")
 	
 	# 更新Claude配置
 	if api_config.services.has("claude"):
@@ -931,6 +1110,9 @@ func _on_save_config_pressed():
 		api_config.services.claude.api_key = api_key
 		api_config.services.claude.base_url = claude_base_url.text if claude_base_url else "https://api.anthropic.com"
 		api_config.services.claude.model = claude_model.text if claude_model else "claude-3-haiku-20240307"
+		
+		if is_enabled and not api_key.is_empty():
+			services_configured.append("Claude")
 	
 	# 更新百度翻译配置
 	if api_config.services.has("baidu"):
@@ -947,14 +1129,24 @@ func _on_save_config_pressed():
 		api_config.services.baidu.enabled = is_enabled
 		api_config.services.baidu.app_id = app_id
 		api_config.services.baidu.secret_key = secret_key
+		
+		if is_enabled and not app_id.is_empty() and not secret_key.is_empty():
+			services_configured.append("百度翻译")
 	
 	# 更新本地模型配置
 	if api_config.services.has("local"):
-		api_config.services.local.enabled = local_enabled.button_pressed if local_enabled else false
-		api_config.services.local.base_url = local_base_url.text if local_base_url else "http://localhost:11434"
-		api_config.services.local.model = local_model.text if local_model else "llama2"
+		var base_url = local_base_url.text if local_base_url else ""
+		var model = local_model.text if local_model else ""
+		var is_enabled = local_enabled.button_pressed if local_enabled else false
+		
+		api_config.services.local.enabled = is_enabled
+		api_config.services.local.base_url = base_url if not base_url.is_empty() else "http://localhost:11434"
+		api_config.services.local.model = model if not model.is_empty() else "llama2"
 		var provider_index = local_provider.selected if local_provider else 0
 		api_config.services.local.provider = "ollama" if provider_index == 0 else "localai"
+		
+		if is_enabled and not base_url.is_empty():
+			services_configured.append("本地模型")
 	
 	# 更新DeepSeek配置
 	if api_config.services.has("deepseek"):
@@ -971,6 +1163,9 @@ func _on_save_config_pressed():
 		api_config.services.deepseek.api_key = api_key
 		api_config.services.deepseek.base_url = deepseek_base_url.text if deepseek_base_url else "https://api.deepseek.com"
 		api_config.services.deepseek.model = deepseek_model.text if deepseek_model else "deepseek-chat"
+		
+		if is_enabled and not api_key.is_empty():
+			services_configured.append("DeepSeek")
 	
 	# 保存配置
 	if config_manager.save_config("api", api_config):
@@ -989,18 +1184,30 @@ func _on_save_config_pressed():
 			var service_names = []
 			for service in available_services:
 				service_names.append(service.display_name)
-			_show_status("✅ 配置保存成功！可用服务: " + ", ".join(service_names) + "\n现在可以进行真实翻译了！", false)
+			
+			var success_message = "✅ 配置保存成功！"
+			if services_configured.size() > 0:
+				success_message += "\n🎯 已配置服务: " + ", ".join(services_configured)
+			success_message += "\n🚀 可用服务: " + ", ".join(service_names) 
+			success_message += "\n现在可以开始翻译了！"
+			_show_status(success_message, false)
 		else:
-			_show_status("配置已保存，但没有可用服务。请填写API密钥并启用服务。", true)
+			var warning_message = "⚠️ 配置已保存，但没有检测到可用服务"
+			if services_configured.size() > 0:
+				warning_message += "\n📝 已配置: " + ", ".join(services_configured)
+				warning_message += "\n💡 提示：配置已保存但服务可能需要验证，请使用「测试连接」功能检查"
+			else:
+				warning_message += "\n💡 请填写API密钥并启用服务"
+			_show_status(warning_message, true)
 		
 		if ai_config_dialog:
 			ai_config_dialog.hide()
 	else:
-		_show_status("保存配置失败", true)
+		_show_status("❌ 保存配置失败，请检查文件权限", true)
 
 ## 测试连接按钮回调
 func _on_test_connection_pressed():
-	_show_status("正在测试当前服务...", false)
+	_show_status("🔍 正在测试连接...", false)
 	
 	# 获取当前选中的标签页对应的服务
 	var current_service = _get_current_tab_service()
@@ -1010,8 +1217,24 @@ func _on_test_connection_pressed():
 	
 	print("开始测试当前选中的服务: ", current_service)
 	
+	# 检查输入有效性
+	var has_valid_input = _check_service_input_validity(current_service)
+	if not has_valid_input:
+		var error_msg = "❌ 配置不完整：请先填写 " + current_service.to_upper() + " 的"
+		match current_service:
+			"openai", "claude", "deepseek":
+				error_msg += "API密钥"
+			"baidu":
+				error_msg += "APP ID和Secret Key"
+			"local":
+				error_msg += "服务器地址和模型名称"
+			_:
+				error_msg += "必要信息"
+		_show_status(error_msg, true)
+		return
+	
 	# 跳过网络测试，直接测试当前服务
-	_show_status("正在测试 " + current_service + " 服务...", false)
+	_show_status("🔍 正在测试 " + current_service.to_upper() + " 服务连接...", false)
 	
 	# 创建临时的翻译服务来测试
 	var temp_translation_service = TranslationService.new()
@@ -1021,10 +1244,24 @@ func _on_test_connection_pressed():
 	
 	if result.success:
 		print("✅ ", current_service, " 测试成功")
-		_show_status("✅ " + current_service + " 连接测试成功！", false)
+		var success_msg = "✅ " + current_service.to_upper() + " 连接测试成功！"
+		
+		# 检查是否已保存配置
+		var api_config = config_manager.get_api_config()
+		var service_config = api_config.services.get(current_service, {})
+		var is_saved_and_enabled = service_config.get("enabled", false)
+		
+		if not is_saved_and_enabled:
+			success_msg += "\n💡 连接正常，请点击「保存」按钮使配置生效，然后即可在主界面使用该服务"
+		else:
+			success_msg += "\n🚀 服务已就绪，可以在主界面使用"
+			
+		_show_status(success_msg, false)
 	else:
 		print("❌ ", current_service, " 测试失败: ", result.error)
-		_show_status("❌ " + current_service + " 连接失败:\n" + result.error, true)
+		var error_msg = "❌ " + current_service.to_upper() + " 连接失败：\n" + result.error
+		error_msg += "\n💡 请检查API密钥是否正确，或尝试重新输入后再次测试"
+		_show_status(error_msg, true)
 
 ## 获取当前选中标签页对应的服务名称
 func _get_current_tab_service() -> String:
@@ -1223,6 +1460,35 @@ func _on_toggle_visibility(line_edit: LineEdit, button: Button):
 	else:
 		button.text = "🙈"  # 显示状态，显示遮眼图标
 
+## API密钥输入变化回调 - 提供实时状态提示
+func _on_api_key_changed(service_name: String):
+	# 当用户输入API密钥时，提供实时的状态提示
+	var has_valid_input = _check_service_input_validity(service_name)
+	
+	if has_valid_input:
+		_show_status("💡 " + service_name.to_upper() + " 密钥已输入，点击下方「保存」按钮使配置生效", false)
+	else:
+		# 如果输入不完整，不显示提示，避免干扰用户
+		pass
+
+## 检查指定服务的输入有效性
+func _check_service_input_validity(service_name: String) -> bool:
+	match service_name:
+		"openai":
+			return openai_api_key and not openai_api_key.text.strip_edges().is_empty()
+		"claude":
+			return claude_api_key and not claude_api_key.text.strip_edges().is_empty()
+		"deepseek":
+			return deepseek_api_key and not deepseek_api_key.text.strip_edges().is_empty()
+		"baidu":
+			return (baidu_app_id and not baidu_app_id.text.strip_edges().is_empty() and 
+					baidu_secret_key and not baidu_secret_key.text.strip_edges().is_empty())
+		"local":
+			return (local_base_url and not local_base_url.text.strip_edges().is_empty() and
+					local_model and not local_model.text.strip_edges().is_empty())
+		_:
+			return false
+
 ## 检查服务状态
 func _check_service_status():
 	if not translation_service:
@@ -1234,15 +1500,34 @@ func _check_service_status():
 		_show_status("AI服务管理器未初始化", true)
 		return
 	
-	var available_services = ai_manager.get_available_services()
+	var all_services = ai_manager.get_available_services()
+	var configured_services = ai_manager.get_configured_services()
+	var kb_status = "禁用"
+	if config_manager and config_manager.is_knowledge_base_enabled():
+		kb_status = "启用"
 	
-	if available_services.size() > 0:
+	print("=== 服务状态检查 ===")
+	print("总服务数: ", all_services.size())
+	print("已配置数: ", configured_services.size())
+	
+	if configured_services.size() > 0:
 		var service_names = []
-		for service in available_services:
+		for service in configured_services:
 			service_names.append(service.display_name)
-		_show_status("✅ 已就绪！可用服务: " + ", ".join(service_names), false)
+		
+		var unconfigured_count = all_services.size() - configured_services.size()
+		var status_message = "✅ 已就绪！可用服务: " + ", ".join(service_names)
+		
+		if unconfigured_count > 0:
+			status_message += " | 未配置: " + str(unconfigured_count) + "个"
+		
+		status_message += " | 知识库: " + kb_status
+		_show_status(status_message, false)
 	else:
-		_show_status("⚠️ 没有可用的AI服务，请点击'配置AI服务'设置API密钥", true)
+		var total_services = all_services.size()
+		_show_status("⚠️ 没有已配置的AI服务，共" + str(total_services) + "个服务可配置，请点击「配置AI服务」设置API密钥 | 知识库: " + kb_status, true)
+	
+	print("===================")
 
 ## 测试网络连通性（简化版，跳过实际测试）
 func _test_network_connectivity() -> Dictionary:
@@ -1568,6 +1853,9 @@ func _on_add_template_pressed():
 	# 刷新模板列表
 	_load_template_config()
 	
+	# 刷新所有模式的模板选择器
+	_populate_template_options()
+	
 	# 选中新创建的模板
 	for i in range(template_list.get_item_count()):
 		if template_list.get_item_metadata(i) == new_template_key:
@@ -1601,6 +1889,9 @@ func _on_delete_template_pressed():
 		
 		# 刷新模板列表
 		_load_template_config()
+		
+		# 刷新所有模式的模板选择器
+		_populate_template_options()
 		
 		_show_status("已删除模板: " + template_name, false)
 	else:
@@ -1650,6 +1941,9 @@ func _on_save_template_pressed():
 	if config_manager.save_config("translation", translation_config):
 		# 刷新模板列表
 		_load_template_config()
+		
+		# 刷新所有模式的模板选择器
+		_populate_template_options()
 		
 		# 重新选中该模板
 		for i in range(template_list.get_item_count()):
@@ -1805,9 +2099,23 @@ func _on_kb_config_button_pressed():
 		_load_kb_config()
 		kb_config_dialog.popup_centered()
 
+## 知识库启用开关回调
+func _on_kb_enabled_toggled(enabled: bool):
+	_update_kb_ui_state(enabled)
+	
+	if enabled:
+		_show_status("知识库功能已启用", false)
+	else:
+		_show_status("知识库功能已禁用", false)
+
 ## 加载知识库配置到对话框
 func _load_kb_config():
 	var kb_config = config_manager.get_knowledge_base_config()
+	
+	# 加载启用状态
+	if kb_enabled_check:
+		kb_enabled_check.button_pressed = kb_config.get("enabled", false)
+		_update_kb_ui_state(kb_enabled_check.button_pressed)
 	
 	# 显示当前路径
 	if current_path_display:
@@ -1882,8 +2190,60 @@ func _update_kb_status(message: String, is_error: bool):
 		kb_status_label.text = "路径状态: " + message
 		kb_status_label.modulate = Color.RED if is_error else Color.GREEN
 
+## 更新知识库UI状态（根据启用状态启用/禁用相关控件）
+func _update_kb_ui_state(enabled: bool):
+	# 控制路径相关控件的启用状态
+	if current_path_display:
+		current_path_display.modulate.a = 1.0 if enabled else 0.5
+	if new_path_input:
+		new_path_input.editable = enabled
+		new_path_input.modulate.a = 1.0 if enabled else 0.5
+	if browse_button:
+		browse_button.disabled = not enabled
+		browse_button.modulate.a = 1.0 if enabled else 0.5
+	if validate_button:
+		validate_button.disabled = not enabled
+		validate_button.modulate.a = 1.0 if enabled else 0.5
+	
+	# 控制选项和高级设置
+	if migrate_data_check:
+		migrate_data_check.disabled = not enabled
+		migrate_data_check.modulate.a = 1.0 if enabled else 0.5
+	if auto_backup_check:
+		auto_backup_check.disabled = not enabled
+		auto_backup_check.modulate.a = 1.0 if enabled else 0.5
+	if cache_size_spinbox:
+		cache_size_spinbox.editable = enabled
+		cache_size_spinbox.modulate.a = 1.0 if enabled else 0.5
+	if similarity_spinbox:
+		similarity_spinbox.editable = enabled
+		similarity_spinbox.modulate.a = 1.0 if enabled else 0.5
+	
+	# 控制按钮
+	if apply_button:
+		if not enabled:
+			apply_button.disabled = true
+		apply_button.modulate.a = 1.0 if enabled else 0.5
+	if reset_kb_button:
+		reset_kb_button.disabled = not enabled
+		reset_kb_button.modulate.a = 1.0 if enabled else 0.5
+	if open_folder_button:
+		open_folder_button.disabled = not enabled
+		open_folder_button.modulate.a = 1.0 if enabled else 0.5
+
 ## 应用知识库配置回调
 func _on_apply_kb_config_pressed():
+	# 保存启用状态
+	var enabled = kb_enabled_check.button_pressed if kb_enabled_check else false
+	config_manager.set_knowledge_base_enabled(enabled)
+	
+	# 如果未启用知识库，只保存启用状态即可
+	if not enabled:
+		_show_status("✅ 知识库功能已禁用", false)
+		if kb_config_dialog:
+			kb_config_dialog.hide()
+		return
+	
 	var new_path = new_path_input.text.strip_edges() if new_path_input else ""
 	var migrate_data = migrate_data_check.button_pressed if migrate_data_check else true
 	
@@ -1905,7 +2265,7 @@ func _on_apply_kb_config_pressed():
 	var result = kb_manager.change_knowledge_base_path(new_path, migrate_data)
 	
 	if result.success:
-		var message = "✅ 知识库路径更新成功"
+		var message = "✅ 知识库配置更新成功"
 		if result.migrated_files > 0:
 			message += "\n已迁移 " + str(result.migrated_files) + " 个文件"
 		
@@ -1917,13 +2277,16 @@ func _on_apply_kb_config_pressed():
 		if kb_config_dialog:
 			kb_config_dialog.hide()
 	else:
-		_show_status("❌ 路径更新失败: " + result.error, true)
+		_show_status("❌ 配置更新失败: " + result.error, true)
 
 ## 重置知识库配置回调
 func _on_reset_kb_config_pressed():
 	var default_path = "data/knowledge_base/"
 	
-	# 重置为默认值
+	# 重置为默认值（包括启用状态）
+	if kb_enabled_check:
+		kb_enabled_check.button_pressed = false  # 默认禁用
+		_update_kb_ui_state(false)
 	if new_path_input:
 		new_path_input.text = default_path
 	if cache_size_spinbox:
@@ -1942,7 +2305,7 @@ func _on_reset_kb_config_pressed():
 		kb_status_label.text = "路径状态: 未验证"
 		kb_status_label.modulate = Color(0.7, 0.7, 0.7, 1)
 	
-	_show_status("已重置为默认配置", false)
+	_show_status("已重置为默认配置（知识库功能默认禁用）", false)
 
 ## 打开文件夹按钮回调
 func _on_open_folder_pressed():
@@ -2025,11 +2388,12 @@ func _handle_unity_translation():
 		return
 	
 	var service_name = _get_selected_unity_service()
+	var template_name = _get_selected_template()
 	if service_name.is_empty():
 		return
 	
 	# 开始翻译
-	_show_status("正在翻译Unity Localization文件...", false)
+	_show_status("正在翻译Unity Localization文件... (使用模板: " + template_name + ")", false)
 	_update_translation_buttons(false, true, false, true)
 	
 	# 设置Unity模式下的UI显示
@@ -2052,8 +2416,8 @@ func _handle_unity_translation():
 		target_text_edit.text = ""
 		target_text_edit.placeholder_text = "Unity翻译译文累积显示"
 	
-	# 处理Unity JSON文件
-	var result = await _process_unity_localization_file(selected_unity_file, output_unity_file, source_lang, target_languages, service_name)
+	# 处理Unity JSON文件（带模板）
+	var result = await _process_unity_localization_file_with_template(selected_unity_file, output_unity_file, source_lang, target_languages, service_name, template_name)
 	
 	if result.success:
 		_show_status("✅ Unity翻译完成！已翻译 " + str(result.translated_count) + " 项", false)
@@ -2091,6 +2455,54 @@ func _get_selected_unity_service() -> String:
 		return available_services[unity_service_option.selected].name
 	
 	return available_services[0].name if not available_services.is_empty() else ""
+
+## 处理Unity Localization Package文件（带模板）
+func _process_unity_localization_file_with_template(input_file: String, output_file: String, source_lang: String, target_languages: Array, service_name: String, template_name: String) -> Dictionary:
+	var result = {"success": false, "error": "", "translated_count": 0}
+	
+	# 读取Unity JSON文件
+	var file = FileAccess.open(input_file, FileAccess.READ)
+	if not file:
+		result.error = "无法打开输入文件"
+		return result
+	
+	var content = file.get_as_text()
+	file.close()
+	
+	# 解析JSON
+	var json = JSON.new()
+	var parse_result = json.parse(content)
+	if parse_result != OK:
+		result.error = "JSON格式错误: " + json.get_error_message()
+		return result
+	
+	var unity_data = json.data
+	
+	# 验证Unity Localization格式
+	if not _validate_unity_localization_format(unity_data):
+		result.error = "不是有效的Unity Localization Package格式"
+		return result
+	
+	# 提取和翻译文本（使用模板）
+	var translation_result = await _translate_unity_entries_with_template(unity_data, source_lang, target_languages, service_name, template_name)
+	if not translation_result.success:
+		result.error = translation_result.error
+		return result
+	
+	result.translated_count = translation_result.translated_count
+	
+	# 保存翻译后的文件
+	var output_json = JSON.stringify(unity_data, "\t")
+	var output_file_handle = FileAccess.open(output_file, FileAccess.WRITE)
+	if not output_file_handle:
+		result.error = "无法创建输出文件"
+		return result
+	
+	output_file_handle.store_string(output_json)
+	output_file_handle.close()
+	
+	result.success = true
+	return result
 
 ## 处理Unity Localization Package文件
 func _process_unity_localization_file(input_file: String, output_file: String, source_lang: String, target_languages: Array, service_name: String) -> Dictionary:
@@ -2155,6 +2567,75 @@ func _validate_unity_localization_format(data: Dictionary) -> bool:
 		return true
 	
 	return false
+
+## 翻译Unity条目（带模板）
+func _translate_unity_entries_with_template(unity_data: Dictionary, source_lang: String, target_languages: Array, service_name: String, template_name: String) -> Dictionary:
+	var result = {"success": false, "error": "", "translated_count": 0}
+	var entries_to_translate = []
+	
+	# 提取所有需要翻译的文本条目
+	_extract_unity_text_entries(unity_data, source_lang, entries_to_translate)
+	
+	if entries_to_translate.is_empty():
+		result.error = "未找到源语言 '" + source_lang + "' 的文本条目"
+		return result
+	
+	print("📝 找到 ", entries_to_translate.size(), " 个需要翻译的条目")
+	print("🎯 使用翻译模板: ", template_name)
+	
+	# 逐个翻译条目
+	var translated_count = 0
+	var total_entries = entries_to_translate.size()
+	
+	for i in range(total_entries):
+		var entry = entries_to_translate[i]
+		var original_text = entry.text
+		
+		# 发送翻译项目开始信号
+		if translation_service:
+			translation_service.translation_item_started.emit({
+				"index": i,
+				"total": total_entries,
+				"text": original_text,
+				"source_lang": source_lang,
+				"target_lang": target_languages[0] if target_languages.size() > 0 else "zh-CN"
+			})
+		
+		# 翻译到各目标语言（使用指定模板）
+		for target_lang in target_languages:
+			var translation_result = await translation_service.translate_text_with_template(original_text, source_lang, target_lang, service_name, template_name)
+			
+			if translation_result.success:
+				# 将翻译结果写入Unity数据结构
+				_set_unity_translation(unity_data, entry.key, target_lang, translation_result.translated_text)
+				translated_count += 1
+				
+				# 发送翻译完成信号
+				if translation_service:
+					translation_service.translation_item_completed.emit({
+						"index": i,
+						"total": total_entries,
+						"original_text": original_text,
+						"translated_text": translation_result.translated_text,
+						"success": true,
+						"action": "新翻译"
+					})
+				
+				# 显示翻译结果
+				if source_text_edit and target_text_edit:
+					source_text_edit.text += "[%d] %s\n" % [i + 1, original_text]
+					target_text_edit.text += "[%d] %s (%s)\n" % [i + 1, translation_result.translated_text, target_lang]
+			else:
+				print("❌ 翻译失败: ", translation_result.error)
+		
+		# 更新进度
+		var progress = float(i + 1) / float(total_entries)
+		if translation_service:
+			translation_service.translation_progress.emit(progress)
+	
+	result.success = true
+	result.translated_count = translated_count
+	return result
 
 ## 翻译Unity条目
 func _translate_unity_entries(unity_data: Dictionary, source_lang: String, target_languages: Array, service_name: String) -> Dictionary:

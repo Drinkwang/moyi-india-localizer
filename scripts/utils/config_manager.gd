@@ -128,11 +128,25 @@ func get_supported_languages() -> Array:
 ## 获取知识库配置
 func get_knowledge_base_config() -> Dictionary:
 	return app_config.get("knowledge_base", {
+		"enabled": false,
 		"root_path": "data/knowledge_base/",
 		"auto_backup": true,
 		"max_cache_size": 1000,
 		"similarity_threshold": 0.6
 	})
+
+## 设置知识库启用状态
+func set_knowledge_base_enabled(enabled: bool) -> bool:
+	if not app_config.has("knowledge_base"):
+		app_config["knowledge_base"] = {}
+	
+	app_config.knowledge_base.enabled = enabled
+	return save_config("app", app_config)
+
+## 获取知识库启用状态
+func is_knowledge_base_enabled() -> bool:
+	var kb_config = get_knowledge_base_config()
+	return kb_config.get("enabled", false)
 
 ## 设置知识库根路径
 func set_knowledge_base_root_path(path: String) -> bool:
