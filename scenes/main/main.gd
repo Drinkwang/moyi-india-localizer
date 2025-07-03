@@ -1000,6 +1000,11 @@ func _on_service_config_button_pressed():
 		# 显示配置指导提示
 		_show_status("🔧 配置AI服务：输入API密钥后，记得点击「保存」按钮使配置生效", false)
 		
+		# 在打包环境中显示配置文件路径信息
+		if OS.has_feature("standalone"):
+			var config_info = config_manager.get_config_paths_info()
+			print("\n=== 配置路径信息 ===\n" + config_info + "\n====================")
+		
 		ai_config_dialog.popup_centered()
 
 ## 设置本地模型提供商选项
@@ -1208,6 +1213,20 @@ func _on_save_config_pressed():
 ## 测试连接按钮回调
 func _on_test_connection_pressed():
 	_show_status("🔍 正在测试连接...", false)
+	
+	# 先执行配置写入测试（确保打包环境下配置可以正常保存）
+	if OS.has_feature("standalone"):
+		print("\n=== 执行配置写入测试 ===")
+		var test_config = {"test_timestamp": Time.get_unix_time_from_system()}
+		var save_result = config_manager.save_config("app", config_manager.get_app_config())
+		
+		if save_result:
+			print("✅ 配置写入测试成功，可以正常保存配置")
+			var config_info = config_manager.get_config_paths_info()
+			print("配置路径信息:\n" + config_info)
+		else:
+			print("❌ 配置写入测试失败，可能缺少写入权限")
+		print("====================\n")
 	
 	# 获取当前选中的标签页对应的服务
 	var current_service = _get_current_tab_service()

@@ -19,9 +19,9 @@
 			"temperature": 0.3
 		},
 		"deepseek": {
-			"api_key": "",
+			"api_key": "sk-3bb767ca5f4b4d25b4ba59318d796e43",
 			"base_url": "https://api.deepseek.com",
-			"enabled": false,
+			"enabled": true,
 			"max_tokens": 2000,
 			"model": "deepseek-chat",
 			"name": "DeepSeek",
