@@ -10,9 +10,9 @@
 			"secret_key": ""
 		},
 		"claude": {
-			"api_key": "",
+			"api_key": "sk-3c9b7400bc6e4caa8ed6381ba7d920f7",
 			"base_url": "https://api.anthropic.com",
-			"enabled": false,
+			"enabled": true,
 			"max_tokens": 2000,
 			"model": "claude-3-haiku-20240307",
 			"name": "Anthropic Claude",

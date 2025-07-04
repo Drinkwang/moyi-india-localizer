@@ -111,7 +111,7 @@ func get_language_column_texts(language_code: String) -> Array:
 ## 设置指定语言列的翻译内容
 func set_language_column_texts(language_code: String, translated_texts: Array):
 	var col_index = headers.find(language_code)
-	if col_index == -1:
+	if col_index == -1 or col_index == 0:  # 不允许修改第一列（id/keys列）
 		return
 	
 	for row_index in range(1, min(csv_data.size(), translated_texts.size() + 1)):
@@ -131,80 +131,96 @@ func set_language_column_texts(language_code: String, translated_texts: Array):
 
 ## 获取支持的扩展名
 func get_supported_extensions() -> Array:
-	return [".csv"]
+	return ["csv"]
 
-## 解析CSV内容
+## 内部方法，用于解析CSV内容
+## 注意：这个实现不依赖get_csv_line()，以更好地处理带引号和换行符的字段
 func _parse_csv(content: String):
 	csv_data.clear()
 	headers.clear()
-	
-	var lines = content.split("\n")
-	for line_index in range(lines.size()):
-		var line = lines[line_index].strip_edges()
-		if line.is_empty():
-			continue
-		
-		var row = _parse_csv_line(line)
-		csv_data.append(row)
-		
-		# 第一行作为表头
-		if line_index == 0:
-			headers = row.duplicate()
 
-## 解析单行CSV
-func _parse_csv_line(line: String) -> Array:
-	var result = []
-	var current_field = ""
-	var in_quotes = false
-	var i = 0
+	if content.is_empty():
+		return
+
+	var lines = content.split("\n", false) # 不过早分割，处理多行字段
 	
-	while i < line.length():
-		var char = line[i]
-		
+	var current_line = ""
+	var in_quotes = false
+	var all_rows_data = []
+	var current_row_data = []
+	var current_field = ""
+
+	for char in content:
 		if char == '"':
-			if in_quotes and i + 1 < line.length() and line[i + 1] == '"':
-				# 转义的引号
-				current_field += '"'
-				i += 1
-			else:
-				# 切换引号状态
-				in_quotes = !in_quotes
+			in_quotes = not in_quotes
+			# 保留引号作为内容的一部分，符合Godot的CSV处理方式
+			current_field += char 
 		elif char == ',' and not in_quotes:
-			# 字段分隔符
-			result.append(current_field)
+			current_row_data.append(current_field.strip_edges())
+			current_field = ""
+		elif char == "\n" and not in_quotes:
+			current_row_data.append(current_field.strip_edges())
+			all_rows_data.append(current_row_data)
+			current_row_data = []
 			current_field = ""
 		else:
 			current_field += char
-		
-		i += 1
-	
-	# 添加最后一个字段
-	result.append(current_field)
-	
-	return result
 
-## 生成CSV内容
+	# 添加最后一个字段和最后一行
+	if not current_field.is_empty() or not current_row_data.is_empty():
+		current_row_data.append(current_field.strip_edges())
+		all_rows_data.append(current_row_data)
+
+	if all_rows_data.is_empty():
+		return
+
+	# Godot的CSV导入器会忽略空的尾随行
+	# 确保我们的解析器也这样做
+	var last_row_index = all_rows_data.size() - 1
+	while last_row_index >= 0:
+		var row = all_rows_data[last_row_index]
+		var is_empty = true
+		for item in row:
+			if not item.is_empty():
+				is_empty = false
+				break
+		if is_empty:
+			all_rows_data.remove_at(last_row_index)
+			last_row_index -= 1
+		else:
+			break
+	
+	if all_rows_data.is_empty():
+		return
+
+	# 将解析的数据赋给csv_data
+	csv_data = all_rows_data
+
+	# 设置表头
+	if not csv_data.is_empty():
+		headers = csv_data[0]
+		key_column = 0 # 假设第一列总是key
+
+## 内部方法，用于将CSV数据生成为字符串
+## 注意：这个实现会正确处理带逗号、引号和换行符的字段
 func _generate_csv() -> String:
-	var result = ""
+	var lines: Array
+	for row_data in csv_data:
+		var line_items: Array
+		for item in row_data:
+			var field = item
+			# 如果字段包含逗号、引号或换行符，则用双引号括起来
+			if field.contains(",") or field.contains("\"") or field.contains("\n"):
+				# Godot要求将字段内的引号转义为两个引号 ""
+				field = field.replace("\"", "\"\"")
+				field = "\"" + field + "\""
+			line_items.append(field)
+		lines.append(",".join(line_items))
 	
-	for row_index in range(csv_data.size()):
-		var row = csv_data[row_index]
-		var line_parts = []
-		
-		for field in row:
-			var field_str = str(field)
-			# 如果字段包含逗号、引号或换行符，需要加引号
-			if field_str.contains(",") or field_str.contains('"') or field_str.contains("\n"):
-				field_str = '"' + field_str.replace('"', '""') + '"'
-			line_parts.append(field_str)
-		
-		result += ",".join(line_parts)
-		if row_index < csv_data.size() - 1:
-			result += "\n"
-	
-	return result
+	# Godot CSV以换行符结束
+	return "\n".join(lines) + "\n"
 
-## 验证Godot CSV格式
+## 验证文件格式
 func validate_file_format(content: String) -> bool:
 	_parse_csv(content)
 	
