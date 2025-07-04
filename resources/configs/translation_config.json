@@ -1,108 +1,242 @@
 {
-  "languages": {
-    "supported_languages": [
-      {"code": "en", "name": "English", "native_name": "English", "description": "英语"},
-      {"code": "zh", "name": "Chinese Simplified", "native_name": "简体中文", "description": "中文（简体）"},
-      {"code": "ja", "name": "Japanese", "native_name": "日本語", "description": "日语"},
-      {"code": "ko", "name": "Korean", "native_name": "한국어", "description": "韩语"},
-      {"code": "ru", "name": "Russian", "native_name": "Русский", "description": "俄语"},
-      {"code": "lzh", "name": "Chinese Traditional", "native_name": "繁體中文", "description": "繁体中文"},
-      {"code": "es", "name": "Spanish", "native_name": "Español", "description": "西班牙语"},
-      {"code": "fr", "name": "French", "native_name": "Français", "description": "法语"},
-      {"code": "de", "name": "German", "native_name": "Deutsch", "description": "德语"},
-      {"code": "it", "name": "Italian", "native_name": "Italiano", "description": "意大利语"},
-      {"code": "pt", "name": "Portuguese", "native_name": "Português", "description": "葡萄牙语"},
-      {"code": "ar", "name": "Arabic", "native_name": "العربية", "description": "阿拉伯语"},
-      {"code": "hi", "name": "Hindi", "native_name": "हिन्दी", "description": "印地语"},
-      {"code": "th", "name": "Thai", "native_name": "ไทย", "description": "泰语"},
-      {"code": "vi", "name": "Vietnamese", "native_name": "Tiếng Việt", "description": "越南语"}
-    ],
-    "custom_language_mappings": {
-      "comment": "您可以在这里自定义语言代码的含义，会覆盖上面的默认设置。默认情况下lzh代表繁体中文",
-      "example_custom_mapping": {
-        "note": "示例：如果您希望添加文言文支持，可以添加如下配置",
-        "wyw": {
-          "name": "Literary Chinese",
-          "native_name": "文言文", 
-          "description": "文言文（古汉语）"
-        }
-      }
-    }
-  },
-  "game_languages": {
-    "programming_languages": [
-      {"name": "GDScript", "extensions": [".gd"], "comment_symbols": ["#"]},
-      {"name": "C#", "extensions": [".cs"], "comment_symbols": ["//", "/*", "*/"]},
-      {"name": "C++", "extensions": [".cpp", ".h"], "comment_symbols": ["//", "/*", "*/"]},
-      {"name": "JavaScript", "extensions": [".js"], "comment_symbols": ["//", "/*", "*/"]},
-      {"name": "Lua", "extensions": [".lua"], "comment_symbols": ["--", "--[[", "--]]"]},
-      {"name": "Python", "extensions": [".py"], "comment_symbols": ["#", "\"\"\"", "'''"]}
-    ]
-  },
-  "translation_rules": {
-    "preserve_variables": true,
-    "preserve_functions": true,
-    "preserve_keywords": true,
-    "translate_comments": true,
-    "translate_strings": true,
-    "custom_patterns": [
-      {
-        "pattern": "\\b[A-Z][A-Z_]+\\b",
-        "description": "常量名称",
-        "preserve": true
-      },
-      {
-        "pattern": "\\b_[a-zA-Z_][a-zA-Z0-9_]*",
-        "description": "私有变量",
-        "preserve": true
-      }
-    ]
-  },
-  "quality_control": {
-    "enable_validation": true,
-    "check_syntax": true,
-    "preserve_indentation": true,
-    "max_line_length": 120
-  },
-  "prompt_templates": {
-    "game_translation": {
-      "name": "游戏翻译通用模板",
-      "description": "适用于大部分游戏文本翻译",
-      "system": "你是一个专业的游戏本地化翻译专家。请遵循以下原则：\n1. 保持游戏术语的一致性和专业性\n2. 适应目标语言的表达习惯\n3. 保持原文的语气和情感\n4. 对于界面文本，保持简洁易懂\n5. 对于按键、快捷键等特殊符号保持不变\n6. 如果遇到代码、变量名或特殊标记，请保持原样",
-      "user_template": "请将以下{source_language}游戏文本翻译成{target_language}：\n\n原文：{text}\n\n请只返回翻译结果，不要添加解释或其他内容。"
-    },
-    "ui_translation": {
-      "name": "游戏界面翻译模板",
-      "description": "专门用于游戏界面元素翻译",
-      "system": "你是游戏界面翻译专家。请注意：\n1. 界面文本要简洁明了\n2. 按钮文字要符合用户习惯\n3. 菜单项目要层次清晰\n4. 提示信息要准确友好\n5. 保持统一的术语表达\n6. 考虑界面空间限制，避免过长的翻译",
-      "user_template": "将以下游戏界面{source_language}文本翻译成{target_language}：\n\n{text}\n\n要求：简洁、准确、符合界面使用习惯。"
-    },
-    "story_translation": {
-      "name": "游戏剧情翻译模板", 
-      "description": "用于游戏剧情、对话、叙述文本",
-      "system": "你是游戏剧情翻译专家。请遵循：\n1. 保持角色性格特点\n2. 维持剧情的情感色彩\n3. 适应目标语言的叙述方式\n4. 保持对话的自然流畅\n5. 尊重原作的世界观设定\n6. 保持台词的戏剧性和感染力",
-      "user_template": "将以下游戏剧情{source_language}文本翻译成{target_language}：\n\n{text}\n\n要求：保持角色语气，情感传达准确。"
-    },
-    "csv_batch": {
-      "name": "CSV批量翻译模板",
-      "description": "专门用于CSV文件的批量翻译，适合大量短文本",
-      "system": "你是专业的游戏本地化翻译专家，正在处理游戏的多语言CSV文件。请注意：\n1. 这些文本通常是游戏界面、菜单、按钮等短文本\n2. 保持翻译的一致性和专业性\n3. 适应目标语言的表达习惯\n4. 保持简洁，适合界面显示\n5. 特殊符号和格式标记请保持不变\n6. 如果是空文本或只有符号，请保持原样",
-      "user_template": "请将以下{source_language}游戏文本翻译成{target_language}：\n\n{text}\n\n请只返回翻译结果，不要添加任何解释。如果原文为空或只包含符号，请返回原文。"
-    },
-    "unity_localization": {
-      "name": "Unity多语言翻译模板",
-      "description": "专门用于Unity Localization Package的翻译，保持格式兼容性",
-      "system": "你是专业的Unity游戏本地化翻译专家，正在处理Unity Localization Package文件。请注意：\n1. 这些文本来自Unity游戏的本地化系统\n2. 保持翻译的术语一致性，特别是游戏专有名词\n3. 适应目标语言的表达习惯和文化背景\n4. UI文本要简洁明了，适合界面显示\n5. 保持原文的语气和情感色彩\n6. 不要翻译变量占位符、特殊标记或代码\n7. 考虑字符串长度对UI布局的影响",
-      "user_template": "请将以下Unity游戏{source_language}文本翻译成{target_language}：\n\n{text}\n\n要求：保持游戏术语一致性，适合Unity界面显示。请只返回翻译结果。"
-    }
-  },
-  "translation_settings": {
-    "default_prompt_template": "game_translation",
-    "csv_prompt_template": "csv_batch",
-    "unity_prompt_template": "unity_localization",
-    "batch_size": 10,
-    "translation_delay": 1.0,
-    "max_retries": 3,
-    "timeout_seconds": 30
-  }
-} 
+	"game_languages": {
+		"programming_languages": [
+			{
+				"comment_symbols": [
+					"#"
+				],
+				"extensions": [
+					".gd"
+				],
+				"name": "GDScript"
+			},
+			{
+				"comment_symbols": [
+					"//",
+					"/*",
+					"*/"
+				],
+				"extensions": [
+					".cs"
+				],
+				"name": "C#"
+			},
+			{
+				"comment_symbols": [
+					"//",
+					"/*",
+					"*/"
+				],
+				"extensions": [
+					".cpp",
+					".h"
+				],
+				"name": "C++"
+			},
+			{
+				"comment_symbols": [
+					"//",
+					"/*",
+					"*/"
+				],
+				"extensions": [
+					".js"
+				],
+				"name": "JavaScript"
+			},
+			{
+				"comment_symbols": [
+					"--",
+					"--[[",
+					"--]]"
+				],
+				"extensions": [
+					".lua"
+				],
+				"name": "Lua"
+			},
+			{
+				"comment_symbols": [
+					"#",
+					"\"\"\"",
+					"'''"
+				],
+				"extensions": [
+					".py"
+				],
+				"name": "Python"
+			}
+		]
+	},
+	"languages": {
+		"custom_language_mappings": {
+			"comment": "您可以在这里自定义语言代码的含义，会覆盖上面的默认设置。默认情况下lzh代表繁体中文",
+			"example_custom_mapping": {
+				"note": "示例：如果您希望添加文言文支持，可以添加如下配置",
+				"wyw": {
+					"description": "文言文（古汉语）",
+					"name": "Literary Chinese",
+					"native_name": "文言文"
+				}
+			}
+		},
+		"supported_languages": [
+			{
+				"code": "en",
+				"description": "英语",
+				"name": "English",
+				"native_name": "English"
+			},
+			{
+				"code": "zh",
+				"description": "中文（简体）",
+				"name": "Chinese Simplified",
+				"native_name": "简体中文"
+			},
+			{
+				"code": "ja",
+				"description": "日语",
+				"name": "Japanese",
+				"native_name": "日本語"
+			},
+			{
+				"code": "ko",
+				"description": "韩语",
+				"name": "Korean",
+				"native_name": "한국어"
+			},
+			{
+				"code": "ru",
+				"description": "俄语",
+				"name": "Russian",
+				"native_name": "Русский"
+			},
+			{
+				"code": "lzh",
+				"description": "繁体中文",
+				"name": "Chinese Traditional",
+				"native_name": "繁體中文"
+			},
+			{
+				"code": "es",
+				"description": "西班牙语",
+				"name": "Spanish",
+				"native_name": "Español"
+			},
+			{
+				"code": "fr",
+				"description": "法语",
+				"name": "French",
+				"native_name": "Français"
+			},
+			{
+				"code": "de",
+				"description": "德语",
+				"name": "German",
+				"native_name": "Deutsch"
+			},
+			{
+				"code": "it",
+				"description": "意大利语",
+				"name": "Italian",
+				"native_name": "Italiano"
+			},
+			{
+				"code": "pt",
+				"description": "葡萄牙语",
+				"name": "Portuguese",
+				"native_name": "Português"
+			},
+			{
+				"code": "ar",
+				"description": "阿拉伯语",
+				"name": "Arabic",
+				"native_name": "العربية"
+			},
+			{
+				"code": "hi",
+				"description": "印地语",
+				"name": "Hindi",
+				"native_name": "हिन्दी"
+			},
+			{
+				"code": "th",
+				"description": "泰语",
+				"name": "Thai",
+				"native_name": "ไทย"
+			},
+			{
+				"code": "vi",
+				"description": "越南语",
+				"name": "Vietnamese",
+				"native_name": "Tiếng Việt"
+			}
+		]
+	},
+	"prompt_templates": {
+		"csv_batch": {
+			"description": "专门用于CSV文件的批量翻译，适合大量短文本",
+			"name": "CSV批量翻译模板",
+			"system": "你是专业的游戏本地化翻译专家，正在处理游戏的多语言CSV文件。请注意：\n1. 这些文本通常是三国策略游戏的游戏剧情\n2. 保持翻译的一致性和专业性\n3. 适应目标语言的表达习惯\n4. 保持语言通俗易懂，和同类策略游戏可比较\n5. 特殊符号和格式标记请保持不变\n6. 如果是空文本或只有符号，请保持原样",
+			"user_template": "请将以下{source_language}游戏文本翻译成{target_language}：\n\n{text}\n\n请只返回翻译结果，不要添加任何解释。如果原文为空或只包含符号，请返回原文。"
+		},
+		"game_translation": {
+			"description": "适用于大部分游戏文本翻译",
+			"name": "游戏翻译通用模板",
+			"system": "你是一个专业的游戏本地化翻译专家。请遵循以下原则：\n1. 保持游戏术语的一致性和专业性\n2. 适应目标语言的表达习惯\n3. 保持原文的语气和情感\n4. 对于界面文本，保持简洁易懂\n5. 对于按键、快捷键等特殊符号保持不变\n6. 如果遇到代码、变量名或特殊标记，请保持原样",
+			"user_template": "请将以下{source_language}游戏文本翻译成{target_language}：\n\n原文：{text}\n\n请只返回翻译结果，不要添加解释或其他内容。"
+		},
+		"story_translation": {
+			"description": "用于游戏剧情、对话、叙述文本",
+			"name": "游戏剧情翻译模板",
+			"system": "你是游戏剧情翻译专家。请遵循：\n1. 保持角色性格特点\n2. 维持剧情的情感色彩\n3. 适应目标语言的叙述方式\n4. 保持对话的自然流畅\n5. 尊重原作的世界观设定\n6. 保持台词的戏剧性和感染力",
+			"user_template": "将以下游戏剧情{source_language}文本翻译成{target_language}：\n\n{text}\n\n要求：保持角色语气，情感传达准确。"
+		},
+		"ui_translation": {
+			"description": "专门用于游戏界面元素翻译",
+			"name": "游戏界面翻译模板",
+			"system": "你是游戏界面翻译专家。请注意：\n1. 界面文本要简洁明了\n2. 按钮文字要符合用户习惯\n3. 菜单项目要层次清晰\n4. 提示信息要准确友好\n5. 保持统一的术语表达\n6. 考虑界面空间限制，避免过长的翻译",
+			"user_template": "将以下游戏界面{source_language}文本翻译成{target_language}：\n\n{text}\n\n要求：简洁、准确、符合界面使用习惯。"
+		},
+		"unity_localization": {
+			"description": "专门用于Unity Localization Package的翻译，保持格式兼容性",
+			"name": "Unity多语言翻译模板",
+			"system": "你是专业的Unity游戏本地化翻译专家，正在处理Unity Localization Package文件。请注意：\n1. 这些文本来自Unity游戏的本地化系统\n2. 保持翻译的术语一致性，特别是游戏专有名词\n3. 适应目标语言的表达习惯和文化背景\n4. UI文本要简洁明了，适合界面显示\n5. 保持原文的语气和情感色彩\n6. 不要翻译变量占位符、特殊标记或代码\n7. 考虑字符串长度对UI布局的影响",
+			"user_template": "请将以下Unity游戏{source_language}文本翻译成{target_language}：\n\n{text}\n\n要求：保持游戏术语一致性，适合Unity界面显示。请只返回翻译结果。"
+		}
+	},
+	"quality_control": {
+		"check_syntax": true,
+		"enable_validation": true,
+		"max_line_length": 120,
+		"preserve_indentation": true
+	},
+	"translation_rules": {
+		"custom_patterns": [
+			{
+				"description": "常量名称",
+				"pattern": "\\b[A-Z][A-Z_]+\\b",
+				"preserve": true
+			},
+			{
+				"description": "私有变量",
+				"pattern": "\\b_[a-zA-Z_][a-zA-Z0-9_]*",
+				"preserve": true
+			}
+		],
+		"preserve_functions": true,
+		"preserve_keywords": true,
+		"preserve_variables": true,
+		"translate_comments": true,
+		"translate_strings": true
+	},
+	"translation_settings": {
+		"batch_size": 10,
+		"csv_prompt_template": "csv_batch",
+		"default_prompt_template": "game_translation",
+		"max_retries": 3,
+		"timeout_seconds": 30,
+		"translation_delay": 1,
+		"unity_prompt_template": "unity_localization"
+	}
+}

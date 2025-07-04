@@ -258,3 +258,7 @@ GAME_START,开始游戏,Start Game,ゲーム開始,Начать игру,開始�
 ## 许可证
 
 MIT License 
+
+如果这个工具对你有所帮助，而刚好你手里有闲钱，也可以请我喝杯咖啡
+微信：![](w_wechat.png)
+支付宝：![](w_aliplay.jpg)
