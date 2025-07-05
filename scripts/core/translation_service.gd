@@ -437,6 +437,7 @@ func translate_godot_csv_with_output(file_path: String, output_path: String, sou
 				# 只在每20项输出一次翻译信息
 				if j % 20 == 0:
 					print("  [", j+1, "/", source_texts.size(), "] 🔄 翻译: '", source_text.substr(0, 50), "'")
+
 				# 检查是否有模板参数传递
 				var template_name = current_translation_info.get("template", "")
 				if template_name.is_empty():
@@ -474,7 +475,7 @@ func translate_godot_csv_with_output(file_path: String, output_path: String, sou
 			# 只在每20项或最后一项时输出进度
 			if j % 20 == 0 or j == source_texts.size() - 1:
 				print("🔄 进度更新: ", int(overall_progress * 100), "% (", j+1, "/", source_texts.size(), " 项，语言 ", i+1, "/", total_languages, ")")
-		
+				await Engine.get_main_loop().process_frame
 		print("✅ 语言 '", target_lang, "' 增量翻译完成")
 		
 		# 统计增量翻译结果
