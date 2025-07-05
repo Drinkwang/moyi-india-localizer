@@ -222,13 +222,14 @@ func get_supported_languages() -> Array:
 	var base_languages = translation_config.get("languages", {}).get("supported_languages", [])
 	var custom_mappings = translation_config.get("languages", {}).get("custom_language_mappings", {})
 	
-	# 应用自定义映射
 	var final_languages = []
+	var processed_codes = []
+
+	# 1. 处理基础语言列表，并应用自定义修改
 	for lang in base_languages:
 		var lang_copy = lang.duplicate()
 		var code = lang_copy.code
 		
-		# 如果有自定义映射，使用自定义设置
 		if custom_mappings.has(code) and custom_mappings[code] is Dictionary:
 			var custom = custom_mappings[code]
 			if custom.has("name"):
@@ -239,7 +240,20 @@ func get_supported_languages() -> Array:
 				lang_copy.description = custom.description
 		
 		final_languages.append(lang_copy)
-	
+		processed_codes.append(code)
+
+	# 2. 添加不在基础列表中的全新自定义语言
+	for code in custom_mappings:
+		if not code in processed_codes:
+			var custom_lang = custom_mappings[code]
+			var new_lang_entry = {
+				"code": code,
+				"name": custom_lang.get("name", code),
+				"native_name": custom_lang.get("native_name", code),
+				"description": custom_lang.get("description", code)
+			}
+			final_languages.append(new_lang_entry)
+			
 	return final_languages
 
 ## 获取知识库配置

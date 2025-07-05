@@ -566,7 +566,7 @@ func _handle_godot_csv_translation():
 		return  # 错误信息已在_get_selected_service()中显示
 	
 	# 开始翻译
-	_show_status("正在翻译Godot CSV文件... (使用模板: " + template_name + ")", false)
+	_show_status("正在翻译CSV文件... (使用模板: " + template_name + ")", false)
 	_update_translation_buttons(false, true, false, true)  # 禁用翻译和恢复，启用暂停和取消
 	
 	# 设置CSV模式下的UI：将文本框改为只读显示模式
@@ -797,7 +797,7 @@ func _setup_mode_options():
 	
 	mode_option.clear()
 	mode_option.add_item("基础文本翻译", TranslationMode.BASIC)
-	mode_option.add_item("Godot多语言CSV", TranslationMode.GODOT_CSV)
+	mode_option.add_item("CSV翻译", TranslationMode.GODOT_CSV)
 	mode_option.add_item("Unity多语言文件", TranslationMode.UNITY_LOCALIZATION)
 	mode_option.selected = 0
 
@@ -1372,42 +1372,107 @@ func _load_language_config():
 	for child in language_list.get_children():
 		child.queue_free()
 	
-	# 显示当前语言配置
+	# 获取语言数据
 	var languages = config_manager.get_supported_languages()
 	var custom_mappings = config_manager.translation_config.get("languages", {}).get("custom_language_mappings", {})
 	
+	# 创建表头
+	var header_container = HBoxContainer.new()
+	language_list.add_child(header_container)
+	var code_header = Label.new()
+	code_header.text = "语言代码"
+	code_header.custom_minimum_size = Vector2(150, 0)
+	code_header.set("theme_override_font_sizes/font_size", 18)
+	header_container.add_child(code_header)
+	
+	var name_header = Label.new()
+	name_header.text = "显示名称"
+	name_header.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	name_header.set("theme_override_font_sizes/font_size", 18)
+	header_container.add_child(name_header)
+	
+	var status_header = Label.new()
+	status_header.text = "状态"
+	status_header.custom_minimum_size = Vector2(80, 0)
+	status_header.set("theme_override_font_sizes/font_size", 18)
+	header_container.add_child(status_header)
+
+	var action_header = Label.new()
+	action_header.text = "操作"
+	action_header.custom_minimum_size = Vector2(150, 0)
+	action_header.set("theme_override_font_sizes/font_size", 18)
+	header_container.add_child(action_header)
+
+	language_list.add_child(HSeparator.new())
+	
+	# 动态填充语言列表
 	for lang in languages:
 		var container = HBoxContainer.new()
 		language_list.add_child(container)
 		
-		# 语言代码标签
-		var code_label = Label.new()
-		code_label.text = lang.code
-		code_label.custom_minimum_size = Vector2(80, 0)
-		container.add_child(code_label)
+		var code = lang.code
+		var name = lang.get("description", lang.get("name", lang.code))
 		
-		# 当前名称显示
-		var current_name_label = Label.new()
-		current_name_label.text = lang.get("description", lang.get("name", lang.code))
-		current_name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		container.add_child(current_name_label)
+		# 点击事件的输入控件
+		var code_line_edit = LineEdit.new()
+		code_line_edit.text = code
+		code_line_edit.editable = false
+		code_line_edit.custom_minimum_size = Vector2(150, 0)
+		code_line_edit.focus_mode = Control.FOCUS_NONE # 避免获得焦点
+		code_line_edit.mouse_filter = Control.MOUSE_FILTER_STOP # 确保能接收点击
+		code_line_edit.gui_input.connect(func(event): 
+			if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+				_on_language_item_selected(code, name)
+		)
+		container.add_child(code_line_edit)
 		
-		# 是否自定义标识
+		var name_line_edit = LineEdit.new()
+		name_line_edit.text = name
+		name_line_edit.editable = false
+		name_line_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		name_line_edit.focus_mode = Control.FOCUS_NONE
+		name_line_edit.mouse_filter = Control.MOUSE_FILTER_STOP
+		name_line_edit.gui_input.connect(func(event):
+			if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+				_on_language_item_selected(code, name)
+		)
+		container.add_child(name_line_edit)
+		
+		# 状态标签
 		var status_label = Label.new()
-		if custom_mappings.has(lang.code):
+		status_label.custom_minimum_size = Vector2(80, 0)
+		if custom_mappings.has(code):
 			status_label.text = "已自定义"
 			status_label.modulate = Color.GREEN
 		else:
 			status_label.text = "默认"
 			status_label.modulate = Color.GRAY
 		container.add_child(status_label)
+
+		# 操作按钮容器
+		var action_container = HBoxContainer.new()
+		action_container.custom_minimum_size = Vector2(150, 0)
+		container.add_child(action_container)
+		
+		# 编辑按钮
+		var edit_button = Button.new()
+		edit_button.text = "编辑"
+		edit_button.pressed.connect(_on_language_item_selected.bind(code, name))
+		action_container.add_child(edit_button)
 		
 		# 删除按钮（仅显示自定义的）
-		if custom_mappings.has(lang.code):
+		if custom_mappings.has(code):
 			var delete_button = Button.new()
 			delete_button.text = "删除"
-			delete_button.pressed.connect(_on_delete_custom_language.bind(lang.code))
-			container.add_child(delete_button)
+			delete_button.pressed.connect(_on_delete_custom_language.bind(code))
+			action_container.add_child(delete_button)
+
+## 当一个语言项被选中进行编辑时
+func _on_language_item_selected(code: String, name: String):
+	if code_input and name_input:
+		code_input.text = code
+		name_input.text = name
+		_show_status("已加载 '" + code + "' 进行编辑", false)
 
 ## 添加/更新语言按钮回调
 func _on_add_language_pressed():

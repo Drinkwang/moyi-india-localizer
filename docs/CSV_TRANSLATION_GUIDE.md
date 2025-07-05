@@ -1,12 +1,12 @@
-# Godot多语言文件翻译指南
+# CSV多语言文件翻译指南
 
 ## 🎮 功能介绍
 
-本工具新增了专门针对Godot游戏引擎多语言CSV文件的翻译功能，可以自动为您的游戏添加多种语言支持。
+本工具新增了专门针对CSV文件的翻译功能，可以自动为您的游戏添加多种语言支持。
 
 ## 📁 支持的文件格式
 
-### Godot CSV多语言文件格式
+### CSV多语言文件格式
 ```csv
 keys,en
 HELLO_WORLD,Hello World
@@ -20,12 +20,12 @@ MENU_SETTINGS,Settings
 
 ## 🔧 使用步骤
 
-### 1. 切换到Godot翻译模式
-- 在主界面的"翻译模式"下拉框中选择"Godot多语言CSV"
+### 1. 切换到CSV翻译模式
+- 在主界面的"翻译模式"下拉框中选择"CSV翻译"
 
 ### 2. 选择CSV文件
 - 点击"选择文件"按钮
-- 选择您的Godot多语言CSV文件
+- 选择您的CSV文件
 - 支持的文件：*.csv
 
 ### 3. 配置语言设置
@@ -37,7 +37,7 @@ MENU_SETTINGS,Settings
 - 支持：OpenAI、Claude、百度翻译、腾讯翻译、本地模型
 
 ### 5. 开始翻译
-- 点击"翻译CSV文件"按钮
+- 点击"翻译CSV"按钮
 - 等待翻译完成，查看进度条
 
 ## 🌐 支持的语言代码
@@ -74,9 +74,9 @@ GAME_START,Start Game
 
 **翻译后：**
 ```csv
-keys,en,zh,ja,ru
-HELLO_WORLD,Hello World,你好世界,こんにちは世界,Привет мир
-GAME_START,Start Game,开始游戏,ゲーム開始,Начать игру
+keys,en,zh,ja,ru,lzh
+HELLO_WORLD,Hello World,你好世界,こんにちは世界,Привет мир,你好世界
+GAME_START,Start Game,开始游戏,ゲーム開始,Начать игру,開始遊戲
 ```
 
 ## 💡 使用技巧
