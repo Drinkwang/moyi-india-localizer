@@ -1,2 +1,27 @@
 # Godot 4+ specific ignores
 .godot/
+
+# User-requested ignores
+*.csv
+/resources/configs/api_config.json
+/resources/configs/app_config.json
+/resources/configs/translation_config.json
+
+# Common Godot ignores
+export_presets.cfg
+*.translation
+*.import
+
+# Executables
+*.exe
+*.dll
+
+# IDE and OS specific
+.vscode/
+.DS_Store
+
+# Data directories
+/data/backups/
+/data/cache/
+/data/logs/
+/data/user_settings/
