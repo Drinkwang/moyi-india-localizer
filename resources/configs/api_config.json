@@ -10,7 +10,7 @@
 			"secret_key": ""
 		},
 		"claude": {
-			"api_key": "sk-3c9b7400bc6e4caa8ed6381ba7d920f7",
+			"api_key": "",
 			"base_url": "https://api.anthropic.com",
 			"enabled": true,
 			"max_tokens": 2000,
@@ -19,7 +19,7 @@
 			"temperature": 0.3
 		},
 		"deepseek": {
-			"api_key": "sk-3bb767ca5f4b4d25b4ba59318d796e43",
+			"api_key": "",
 			"base_url": "https://api.deepseek.com",
 			"enabled": true,
 			"max_tokens": 2000,

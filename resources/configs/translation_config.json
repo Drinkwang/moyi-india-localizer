@@ -70,31 +70,7 @@
 	},
 	"languages": {
 		"custom_language_mappings": {
-			"Chinese (Simplified)(zh)": {
-				"description": "简体中文",
-				"name": "简体中文",
-				"native_name": "简体中文"
-			},
-			"Chinese (Traditional)(zh-TW)": {
-				"description": "繁体中文",
-				"name": "繁体中文",
-				"native_name": "繁体中文"
-			},
-			"English (United States)(en-US)": {
-				"description": "英文",
-				"name": "英文",
-				"native_name": "英文"
-			},
-			"Japanese(ja)": {
-				"description": "日语",
-				"name": "日语",
-				"native_name": "日语"
-			},
-			"Russian(ru)": {
-				"description": "俄语",
-				"name": "俄语",
-				"native_name": "俄语"
-			}
+
 		},
 		"supported_languages": [
 			{
