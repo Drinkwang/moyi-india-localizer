@@ -90,8 +90,8 @@ func _get_translation_prompt(text: String, source_lang: String, target_lang: Str
 	user_prompt = user_prompt.replace("{text}", text)
 	
 	return {
-		"system": system_prompt,
-		"user": user_prompt
+		"system": tr(system_prompt),
+		"user": tr(user_prompt)
 	}
 
 ## 通用HTTP请求函数
