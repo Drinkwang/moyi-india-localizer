@@ -9,7 +9,7 @@
 
 # AI Game Dev Translation Tool
 
-An AI-powered translation software built with Godot, specifically designed for translating text in game development. It supports local large language models (LLMs) and various online API services.
+A one-click multi-language translation software designed for indie game developers, supporting Godot, Unity, and Unreal. Built with Godot, it uses AI for translating game text and supports local LLMs and various online API services.
 
 > 👨‍💻 **Developer**: [Peng Yan (鹏砚)](https://space.bilibili.com/13061595) | 🤖 **AI Co-developer**: Built in collaboration with Claude AI
 
@@ -132,7 +132,7 @@ GAME_START,Start Game
 
 # AI翻译游戏开发工具
 
-一款基于Godot开发的AI翻译软件，专门用于游戏开发语言的翻译。支持本地大模型和多种网络API服务。
+一款为独立游戏开发者设计的一键多语言翻译软件，支持 Godot、Unity 和 Unreal。基于Godot开发，使用AI翻译游戏文本，支持本地大模型和多种网络API服务。
 
 > 👨‍💻 **开发者**: [鹏砚](https://space.bilibili.com/13061595) | 🤖 **AI协作开发**: 与Claude AI共同完成
 
