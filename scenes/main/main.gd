@@ -148,7 +148,6 @@ func _ready():
 	_initialize_services()
 	_setup_ui()
 	_connect_signals()
-	TranslationServer.set_locale("en")
 	intLan()
 
 ## 初始化服务
@@ -798,9 +797,9 @@ func _setup_mode_options():
 		return
 	
 	mode_option.clear()
-	mode_option.add_item("基础文本翻译", TranslationMode.BASIC)
-	mode_option.add_item("CSV翻译", TranslationMode.GODOT_CSV)
-	mode_option.add_item("Unity多语言文件", TranslationMode.UNITY_LOCALIZATION)
+	mode_option.add_item(tr("基础文本翻译"), TranslationMode.BASIC)
+	mode_option.add_item(tr("CSV翻译"), TranslationMode.GODOT_CSV)
+	mode_option.add_item(tr("Unity多语言文件"), TranslationMode.UNITY_LOCALIZATION)
 	mode_option.selected = 0
 
 

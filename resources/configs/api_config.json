@@ -19,7 +19,7 @@
 			"temperature": 0.3
 		},
 		"deepseek": {
-			"api_key": "",
+			"api_key": "sk-48c3ef29445744568da78cbe5d16f00a",
 			"base_url": "https://api.deepseek.com",
 			"enabled": true,
 			"max_tokens": 2000,
