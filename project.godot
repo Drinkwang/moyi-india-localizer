@@ -15,6 +15,10 @@ run/main_scene="res://scenes/main/main.tscn"
 config/features=PackedStringArray("4.2", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[internationalization]
+
+locale/translations=PackedStringArray("res://resources/languages/tool_language.en.translation", "res://resources/languages/tool_language.ja.translation", "res://resources/languages/tool_language.lzh.translation", "res://resources/languages/tool_language.ru.translation", "res://resources/languages/tool_language.zh.translation")
+
 [rendering]
 
 renderer/rendering_method="gl_compatibility"

@@ -2,7 +2,7 @@
 .godot/
 
 # User-requested ignores
-*.csv
+
 /resources/configs/api_config.json
 /resources/configs/app_config.json
 /resources/configs/translation_config.json

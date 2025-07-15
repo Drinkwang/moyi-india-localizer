@@ -1,0 +1,42 @@
+[gd_scene load_steps=2 format=3 uid="uid://cy8j8x8x8x8x"]
+
+[ext_resource type="Script" path="res://scenes/settings/language_config_dialog.gd" id="1_abc123"]
+
+[node name="LanguageConfigDialog" type="Window"]
+title = "Language Settings"
+script = ExtResource("1_abc123")
+position = Vector2i(100, 100)
+size = Vector2i(300, 200)
+min_size = Vector2i(300, 200)
+max_size = Vector2i(300, 200)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Language Settings"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="LanguageButtons" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="EnglishButton" type="Button" parent="VBoxContainer/LanguageButtons"]
+layout_mode = 2
+text = "English"
+
+[node name="ChineseButton" type="Button" parent="VBoxContainer/LanguageButtons"]
+layout_mode = 2
+text = "中文"

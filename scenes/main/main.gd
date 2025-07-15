@@ -148,6 +148,8 @@ func _ready():
 	_initialize_services()
 	_setup_ui()
 	_connect_signals()
+	TranslationServer.set_locale("en")
+	intLan()
 
 ## 初始化服务
 func _initialize_services():
@@ -2858,3 +2860,31 @@ func _set_unity_translation(unity_data: Dictionary, key_id: String, target_lang:
 				"Entries": [{"Id": int(key_id), "Value": translated_text}]
 			}
 			table_data.append(new_locale)
+
+@onready var lanbtn = $"TemplateConfigDialog_VBoxContainer_MainContainer_TemplateListContainer_ListButtonsContainer#DeleteTemplateButton"
+
+func intLan():
+	var translation_config = config_manager.get_translation_config()
+	if translation_config.lan==null or 	translation_config.lan.length()<=0:
+		translation_config.lan= OS.get_locale_language()
+	TranslationServer.set_locale(translation_config.lan)
+	
+	
+	if translation_config.lan=="zh":
+		lanbtn.text="en"
+	else:
+		lanbtn.text="zh"
+func _lanchange_button_down():
+	var translation_config = config_manager.get_translation_config()
+	
+	if translation_config.lan=="zh":
+		translation_config.lan="en"
+	else:
+		translation_config.lan="zh"
+		
+	TranslationServer.set_locale(translation_config.lan)	
+	config_manager.save_config("translation", translation_config)
+	if translation_config.lan=="zh":
+		lanbtn.text="en"
+	else:
+		lanbtn.text="zh"
