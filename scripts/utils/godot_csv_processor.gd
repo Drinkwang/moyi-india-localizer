@@ -134,7 +134,7 @@ func get_supported_extensions() -> Array:
 	return ["csv"]
 
 ## 内部方法，用于解析CSV内容
-## 注意：这个实现不依赖get_csv_line()，以更好地处理带引号和换行符的字段
+## 注意：正确处理CSV引号转义，避免引号累积问题
 func _parse_csv(content: String):
 	csv_data.clear()
 	headers.clear()
@@ -142,32 +142,44 @@ func _parse_csv(content: String):
 	if content.is_empty():
 		return
 
-	var lines = content.split("\n", false) # 不过早分割，处理多行字段
-	
-	var current_line = ""
-	var in_quotes = false
 	var all_rows_data = []
 	var current_row_data = []
 	var current_field = ""
-
-	for char in content:
+	var in_quotes = false
+	var i = 0
+	
+	while i < content.length():
+		var char = content[i]
+		
 		if char == '"':
-			in_quotes = not in_quotes
-			# 保留引号作为内容的一部分，符合Godot的CSV处理方式
-			current_field += char 
+			if in_quotes:
+				# 检查是否是转义的引号（双引号）
+				if i + 1 < content.length() and content[i + 1] == '"':
+					# 转义的引号，添加一个引号到字段内容
+					current_field += '"'
+					i += 1  # 跳过下一个引号
+				else:
+					# 引号结束，不添加引号到字段内容
+					in_quotes = false
+			else:
+				# 引号开始，不添加引号到字段内容
+				in_quotes = true
 		elif char == ',' and not in_quotes:
 			current_row_data.append(current_field.strip_edges())
 			current_field = ""
 		elif char == "\n" and not in_quotes:
 			current_row_data.append(current_field.strip_edges())
-			all_rows_data.append(current_row_data)
+			if current_row_data.size() > 0:
+				all_rows_data.append(current_row_data)
 			current_row_data = []
 			current_field = ""
 		else:
 			current_field += char
+		
+		i += 1
 
 	# 添加最后一个字段和最后一行
-	if not current_field.is_empty() or not current_row_data.is_empty():
+	if current_field.length() > 0 or current_row_data.size() > 0:
 		current_row_data.append(current_field.strip_edges())
 		all_rows_data.append(current_row_data)
 
@@ -280,4 +292,68 @@ func get_all_keys() -> Array:
 	for row_index in range(1, csv_data.size()):
 		if csv_data[row_index].size() > 0:
 			keys.append(csv_data[row_index][0])
-	return keys 
+	return keys
+
+## 清理CSV中的多余引号
+## 这个函数可以修复由于复制粘贴导致的引号问题
+func clean_unnecessary_quotes() -> bool:
+	var cleaned = false
+	
+	for row_index in range(csv_data.size()):
+		var row = csv_data[row_index]
+		for col_index in range(row.size()):
+			var original_cell = row[col_index]
+			var cleaned_cell = _clean_cell_quotes(original_cell)
+			
+			if cleaned_cell != original_cell:
+				row[col_index] = cleaned_cell
+				cleaned = true
+				print("清理单元格 [", row_index, ",", col_index, "]: '", original_cell, "' -> '", cleaned_cell, "'")
+	
+	return cleaned
+
+## 内部方法：清理单个单元格的多余引号
+func _clean_cell_quotes(cell: String) -> String:
+	if cell.is_empty():
+		return cell
+	
+	# 移除首尾的多余引号（如果内容不需要引号包围）
+	if cell.begins_with('"') and cell.ends_with('"') and cell.length() >= 2:
+		var inner_content = cell.substr(1, cell.length() - 2)
+		
+		# 检查内容是否真的需要引号
+		# 只有包含逗号、换行符或引号的内容才需要引号包围
+		if not (inner_content.contains(",") or inner_content.contains("\n") or inner_content.contains('"')):
+			return inner_content
+	
+	return cell
+
+## 验证并修复CSV格式
+func validate_and_fix_csv() -> Dictionary:
+	var result = {
+		"valid": true,
+		"issues_found": [],
+		"fixes_applied": []
+	}
+	
+	# 检查并清理多余引号
+	if clean_unnecessary_quotes():
+		result.fixes_applied.append("清理了多余的引号")
+	
+	# 检查行列一致性
+	if csv_data.size() > 0:
+		var expected_columns = headers.size()
+		for row_index in range(1, csv_data.size()):
+			var row = csv_data[row_index]
+			if row.size() != expected_columns:
+				result.issues_found.append("行 " + str(row_index) + " 列数不匹配，期望 " + str(expected_columns) + " 列，实际 " + str(row.size()) + " 列")
+				
+				# 自动修复：补齐缺失的列
+				while row.size() < expected_columns:
+					row.append("")
+					result.fixes_applied.append("为行 " + str(row_index) + " 补齐了缺失的列")
+	
+	if result.issues_found.size() > 0:
+		result.valid = false
+	
+	return result
