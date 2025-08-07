@@ -42,11 +42,16 @@ func translate_text(text: String, source_lang: String, target_lang: String, serv
 	if text.is_empty():
 		return {"success": false, "error": "文本为空"}
 	
-	# 检查缓存
+	# 检查是否启用增量翻译，只有在增量模式下才使用缓存
+	var config_manager = ConfigManager.new()
+	var use_cache = config_manager.is_incremental_translation_enabled()
+	
+	# 检查缓存（仅在增量模式下）
 	var cache_key = _generate_cache_key(text, source_lang, target_lang)
-	var cached_result = cache_manager.get_translation(cache_key)
-	if cached_result:
-		return {"success": true, "translated_text": cached_result}
+	if use_cache:
+		var cached_result = cache_manager.get_translation(cache_key)
+		if cached_result:
+			return {"success": true, "translated_text": cached_result}
 	
 	# 获取AI服务
 	var service = ai_service_manager.get_service(service_name)
@@ -57,8 +62,9 @@ func translate_text(text: String, source_lang: String, target_lang: String, serv
 	var result = await service.translate(text, source_lang, target_lang)
 	
 	if result.success:
-		# 缓存结果
-		cache_manager.save_translation(cache_key, result.translated_text)
+		# 缓存结果（仅在增量模式下）
+		if use_cache:
+			cache_manager.save_translation(cache_key, result.translated_text)
 		translation_completed.emit(result)
 	else:
 		translation_failed.emit(result.error)
@@ -70,11 +76,16 @@ func translate_text_with_template(text: String, source_lang: String, target_lang
 	if text.is_empty():
 		return {"success": false, "error": "文本为空"}
 	
-	# 检查缓存（包含模板信息）
+	# 检查是否启用增量翻译，只有在增量模式下才使用缓存
+	var config_manager = ConfigManager.new()
+	var use_cache = config_manager.is_incremental_translation_enabled()
+	
+	# 检查缓存（包含模板信息，仅在增量模式下）
 	var cache_key = _generate_cache_key_with_template(text, source_lang, target_lang, template_name)
-	var cached_result = cache_manager.get_translation(cache_key)
-	if cached_result:
-		return {"success": true, "translated_text": cached_result}
+	if use_cache:
+		var cached_result = cache_manager.get_translation(cache_key)
+		if cached_result:
+			return {"success": true, "translated_text": cached_result}
 	
 	# 获取AI服务
 	var service = ai_service_manager.get_service(service_name)
@@ -85,8 +96,9 @@ func translate_text_with_template(text: String, source_lang: String, target_lang
 	var result = await service.translate_with_template(text, source_lang, target_lang, template_name)
 	
 	if result.success:
-		# 缓存结果
-		cache_manager.save_translation(cache_key, result.translated_text)
+		# 缓存结果（仅在增量模式下）
+		if use_cache:
+			cache_manager.save_translation(cache_key, result.translated_text)
 		translation_completed.emit(result)
 	else:
 		translation_failed.emit(result.error)
@@ -376,7 +388,7 @@ func translate_godot_csv_with_output(file_path: String, output_path: String, sou
 			
 			if source_text.strip_edges().is_empty():
 				empty_source_count += 1
-			elif not existing_target.strip_edges().is_empty():
+			elif not existing_target.strip_edges().is_empty() and config_manager.is_incremental_translation_enabled():
 				already_translated_count += 1
 			else:
 				need_translation_count += 1
@@ -427,13 +439,16 @@ func translate_godot_csv_with_output(file_path: String, output_path: String, sou
 				# 源文本为空，目标也设为空
 				result = {"success": true, "translated_text": ""}
 				action_taken = "空源文本"
-			elif not existing_target.strip_edges().is_empty():
-				# 目标已有翻译，保持现有翻译
+			elif not existing_target.strip_edges().is_empty() and config_manager.is_incremental_translation_enabled():
+				# 增量翻译启用且目标已有翻译，保持现有翻译
 				result = {"success": true, "translated_text": existing_target}
-				action_taken = "保持现有翻译"
+				action_taken = "保持现有翻译(增量模式)"
 			else:
-				# 需要翻译：源文本不为空且目标为空
-				action_taken = "新翻译"
+				# 需要翻译：源文本不为空且(目标为空 或 增量翻译未启用)
+				if not existing_target.strip_edges().is_empty() and not config_manager.is_incremental_translation_enabled():
+					action_taken = "重新翻译(非增量模式)"
+				else:
+					action_taken = "新翻译"
 				# 只在每20项输出一次翻译信息
 				if j % 20 == 0:
 					print("  [", j+1, "/", source_texts.size(), "] 🔄 翻译: '", source_text.substr(0, 50), "'")
@@ -491,7 +506,7 @@ func translate_godot_csv_with_output(file_path: String, output_path: String, sou
 			
 			if source_text.strip_edges().is_empty():
 				empty_count += 1
-			elif not existing_target.strip_edges().is_empty():
+			elif not existing_target.strip_edges().is_empty() and config_manager.is_incremental_translation_enabled():
 				kept_translation_count += 1
 			elif result.get("success", false):
 				new_translation_count += 1
@@ -610,4 +625,4 @@ func translate_godot_csv_with_output_and_template(file_path: String, output_path
 func _generate_output_path(original_path: String, target_lang: String) -> String:
 	var base_name = original_path.get_basename()
 	var extension = original_path.get_extension()
-	return base_name + "_" + target_lang + "." + extension 
+	return base_name + "_" + target_lang + "." + extension

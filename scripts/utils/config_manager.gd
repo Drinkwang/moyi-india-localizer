@@ -358,6 +358,15 @@ func get_translation_rules() -> Dictionary:
 func get_quality_control_settings() -> Dictionary:
 	return translation_config.get("quality_control", {})
 
+## 获取增量翻译启用状态
+func is_incremental_translation_enabled() -> bool:
+	return api_config.get("incremental_translation", true)
+
+## 设置增量翻译启用状态
+func set_incremental_translation_enabled(enabled: bool) -> bool:
+	api_config["incremental_translation"] = enabled
+	return save_config("api", api_config)
+
 ## 获取配置路径信息（用于调试）
 func get_config_paths_info() -> String:
 	var info = "配置路径信息:"
@@ -379,4 +388,4 @@ func get_config_paths_info() -> String:
 	info += "\n- 路径: " + (USER_TRANSLATION_CONFIG_PATH if is_exported else TRANSLATION_CONFIG_PATH)
 	info += "\n- 存在: " + str(FileAccess.file_exists(USER_TRANSLATION_CONFIG_PATH if is_exported else TRANSLATION_CONFIG_PATH))
 	
-	return info 
+	return info

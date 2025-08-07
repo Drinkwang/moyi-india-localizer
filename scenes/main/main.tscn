@@ -592,6 +592,30 @@ text = "模型:"
 layout_mode = 2
 text = "deepseek-chat"
 
+[node name="HSeparator" type="HSeparator" parent="AIConfigDialog/VBoxContainer"]
+layout_mode = 2
+
+[node name="GeneralSettingsContainer" type="VBoxContainer" parent="AIConfigDialog/VBoxContainer"]
+layout_mode = 2
+
+[node name="GeneralSettingsLabel" type="Label" parent="AIConfigDialog/VBoxContainer/GeneralSettingsContainer"]
+layout_mode = 2
+text = "通用设置"
+horizontal_alignment = 1
+
+[node name="IncrementalTranslationContainer" type="HBoxContainer" parent="AIConfigDialog/VBoxContainer/GeneralSettingsContainer"]
+layout_mode = 2
+
+[node name="IncrementalTranslationCheck" type="CheckBox" parent="AIConfigDialog/VBoxContainer/GeneralSettingsContainer/IncrementalTranslationContainer"]
+layout_mode = 2
+text = "启用增量翻译"
+
+[node name="IncrementalTranslationInfo" type="Label" parent="AIConfigDialog/VBoxContainer/GeneralSettingsContainer/IncrementalTranslationContainer"]
+modulate = Color(0.7, 0.7, 0.7, 1)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "仅翻译新增或修改的内容，跳过已翻译的条目"
+
 [node name="ButtonContainer" type="HBoxContainer" parent="AIConfigDialog/VBoxContainer"]
 layout_mode = 2
 

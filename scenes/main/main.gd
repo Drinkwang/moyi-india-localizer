@@ -80,6 +80,9 @@ extends Control
 @onready var deepseek_base_url: LineEdit = $"AIConfigDialog/VBoxContainer/TabContainer/DeepSeek/BaseURLInput"
 @onready var deepseek_model: LineEdit = $"AIConfigDialog/VBoxContainer/TabContainer/DeepSeek/ModelInput"
 
+# 通用设置节点引用
+@onready var incremental_translation_check: CheckBox = $AIConfigDialog/VBoxContainer/GeneralSettingsContainer/IncrementalTranslationContainer/IncrementalTranslationCheck
+
 # 显示/隐藏密钥按钮引用
 @onready var openai_toggle_button: Button = $AIConfigDialog/VBoxContainer/TabContainer/OpenAI/APIKeyContainer/ToggleVisibilityButton
 @onready var claude_toggle_button: Button = $AIConfigDialog/VBoxContainer/TabContainer/Claude/APIKeyContainer/ToggleVisibilityButton
@@ -288,6 +291,11 @@ func _connect_signals():
 		import_template_button.pressed.connect(_on_import_template_pressed)
 	if export_template_button:
 		export_template_button.pressed.connect(_on_export_template_pressed)
+	
+	# 增量翻译开关
+	if incremental_translation_check:
+		incremental_translation_check.toggled.connect(_on_incremental_translation_toggled)
+		print("✅ 增量翻译开关信号连接完成")
 	
 	# 知识库配置
 	if kb_config_button:
@@ -1020,6 +1028,10 @@ func _setup_local_provider_options():
 func _load_ai_config():
 	var api_config = config_manager.get_api_config()
 	
+	# 加载通用设置
+	if incremental_translation_check:
+		incremental_translation_check.button_pressed = api_config.get("incremental_translation", false)
+	
 	# OpenAI配置
 	if openai_enabled and api_config.services.has("openai"):
 		var openai_config = api_config.services.openai
@@ -1081,6 +1093,10 @@ func _on_save_config_pressed():
 	
 	var api_config = config_manager.get_api_config()
 	var services_configured = []  # 记录配置的服务
+	
+	# 保存通用设置
+	if incremental_translation_check:
+		api_config["incremental_translation"] = incremental_translation_check.button_pressed
 	
 	# 更新OpenAI配置
 	if api_config.services.has("openai"):
@@ -2183,6 +2199,37 @@ func _on_kb_config_button_pressed():
 	if kb_config_dialog:
 		_load_kb_config()
 		kb_config_dialog.popup_centered()
+
+## 增量翻译开关回调
+func _on_incremental_translation_toggled(enabled: bool):
+	# 立即保存配置
+	config_manager.set_incremental_translation_enabled(enabled)
+	
+	# 显示状态提示
+	if enabled:
+		_show_status("✅ 增量翻译已启用 - 将跳过已翻译的内容", false)
+	else:
+		_show_status("🔄 增量翻译已禁用 - 将重新翻译所有内容（不使用缓存）", false)
+		
+		# 询问是否清除现有缓存
+		var dialog = AcceptDialog.new()
+		dialog.title = "清除缓存"
+		dialog.dialog_text = "是否要清除现有的翻译缓存？\n这将确保下次翻译时完全重新翻译所有内容。"
+		dialog.add_cancel_button("保留缓存")
+		add_child(dialog)
+		dialog.popup_centered()
+		
+		# 连接确认信号
+		dialog.confirmed.connect(_on_clear_cache_confirmed)
+		dialog.tree_exited.connect(func(): dialog.queue_free())
+	
+	print("📝 增量翻译状态已更新: ", enabled)
+
+## 确认清除缓存
+func _on_clear_cache_confirmed():
+	var cache_manager = CacheManager.new()
+	cache_manager.clear_cache()
+	_show_status("🗑️ 翻译缓存已清除", false)
 
 ## 知识库启用开关回调
 func _on_kb_enabled_toggled(enabled: bool):
