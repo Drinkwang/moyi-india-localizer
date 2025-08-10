@@ -23,6 +23,16 @@ func translate_with_template(text: String, source_lang: String, target_lang: Str
 	# 默认实现：调用普通翻译方法，由子类重写以支持模板
 	return await translate(text, source_lang, target_lang)
 
+## 使用知识库增强翻译文本
+func translate_with_knowledge_base(text: String, source_lang: String, target_lang: String, knowledge_base_manager: KnowledgeBaseManager) -> Dictionary:
+	# 默认实现：调用普通翻译方法，由子类重写以支持知识库
+	return await translate(text, source_lang, target_lang)
+
+## 使用模板和知识库增强翻译文本
+func translate_with_template_and_knowledge_base(text: String, source_lang: String, target_lang: String, template_name: String = "", knowledge_base_manager: KnowledgeBaseManager = null) -> Dictionary:
+	# 默认实现：调用模板翻译方法，由子类重写以支持知识库
+	return await translate_with_template(text, source_lang, target_lang, template_name)
+
 ## 测试连接 - 必须由子类实现
 func test_connection() -> Dictionary:
 	push_error("test_connection方法必须由子类实现")
@@ -56,7 +66,7 @@ func _get_language_name(lang_code: String) -> String:
 	return config_manager.get_language_name(lang_code)
 
 ## 获取专业的翻译提示词
-func _get_translation_prompt(text: String, source_lang: String, target_lang: String, template_name: String = "") -> Dictionary:
+func _get_translation_prompt(text: String, source_lang: String, target_lang: String, template_name: String = "", knowledge_base_manager: KnowledgeBaseManager = null) -> Dictionary:
 	var config_manager = ConfigManager.new()
 	var translation_config = config_manager.get_translation_config()
 	
@@ -88,6 +98,10 @@ func _get_translation_prompt(text: String, source_lang: String, target_lang: Str
 	user_prompt = user_prompt.replace("{source_language}", source_lang_name)
 	user_prompt = user_prompt.replace("{target_language}", target_lang_name)
 	user_prompt = user_prompt.replace("{text}", text)
+	
+	# 使用知识库增强提示（如果可用）
+	if knowledge_base_manager:
+		user_prompt = knowledge_base_manager.enhance_prompt(text, source_lang, target_lang, user_prompt)
 	
 	return {
 		"system": tr(system_prompt),
@@ -180,4 +194,4 @@ func _send_http_request(url: String, headers: Array, method: HTTPClient.Method =
 		return {"success": false, "error": "请求超时"}
 	
 	print("✅ 请求完成，返回结果")
-	return status.data 
+	return status.data

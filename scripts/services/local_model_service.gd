@@ -138,4 +138,56 @@ func _parse_translation_response(data: Dictionary) -> Dictionary:
 	if translated_text.is_empty():
 		return {"success": false, "error": "翻译结果为空"}
 	
-	return {"success": true, "translated_text": translated_text} 
+	return {"success": true, "translated_text": translated_text}
+
+## 使用知识库增强翻译文本
+func translate_with_knowledge_base(text: String, source_lang: String, target_lang: String, knowledge_base_manager: KnowledgeBaseManager) -> Dictionary:
+	return await translate_with_template_and_knowledge_base(text, source_lang, target_lang, "csv_batch", knowledge_base_manager)
+
+## 使用指定模板翻译文本
+func translate_with_template(text: String, source_lang: String, target_lang: String, template_name: String = "") -> Dictionary:
+	if not _validate_config():
+		return {"success": false, "error": "配置无效"}
+	
+	# 获取专业翻译提示词，传递模板名称
+	var prompts = _get_translation_prompt(text, source_lang, target_lang, template_name)
+	var full_prompt = prompts.system + "\n\n" + prompts.user
+	
+	# 根据提供商选择不同的请求格式
+	var response = Dictionary()
+	match provider.to_lower():
+		"ollama":
+			response = await _send_ollama_request(full_prompt)
+		"localai":
+			response = await _send_localai_request(full_prompt)
+		_:
+			response = await _send_ollama_request(full_prompt)  # 默认使用Ollama格式
+	
+	if response.success:
+		return _parse_translation_response(response.data)
+	else:
+		return {"success": false, "error": response.error}
+
+## 使用模板和知识库增强翻译文本
+func translate_with_template_and_knowledge_base(text: String, source_lang: String, target_lang: String, template_name: String = "", knowledge_base_manager: KnowledgeBaseManager = null) -> Dictionary:
+	if not _validate_config():
+		return {"success": false, "error": "配置无效"}
+	
+	# 获取专业翻译提示词，传递模板名称和知识库管理器
+	var prompts = _get_translation_prompt(text, source_lang, target_lang, template_name, knowledge_base_manager)
+	var full_prompt = prompts.system + "\n\n" + prompts.user
+	
+	# 根据提供商选择不同的请求格式
+	var response = Dictionary()
+	match provider.to_lower():
+		"ollama":
+			response = await _send_ollama_request(full_prompt)
+		"localai":
+			response = await _send_localai_request(full_prompt)
+		_:
+			response = await _send_ollama_request(full_prompt)  # 默认使用Ollama格式
+	
+	if response.success:
+		return _parse_translation_response(response.data)
+	else:
+		return {"success": false, "error": response.error}

@@ -37,7 +37,75 @@ func initialize(config_manager: ConfigManager = null):
 	_ensure_directories()
 	_load_cache()
 	_load_context_rules()
-	print("✅ 知识库管理器初始化完成，路径: ", _kb_root_dir)
+	
+	# 如果缓存为空，自动扫描并导入现有的术语文件
+	if _term_cache.is_empty():
+		_auto_import_existing_files()
+	
+	print("✅ 知识库管理器初始化完成，路径: ", _kb_root_dir, "，术语数量: ", _term_cache.size())
+
+## 自动导入现有的术语文件
+func _auto_import_existing_files():
+	print("🔍 扫描现有术语文件...")
+	
+	# 扫描知识库根目录下的所有术语文件
+	var files_to_import = []
+	_scan_directory_for_terms(_kb_root_dir, files_to_import)
+	
+	if files_to_import.is_empty():
+		print("ℹ️ 未找到现有术语文件")
+		return
+	
+	print("📥 发现 ", files_to_import.size(), " 个术语文件，开始导入...")
+	
+	for file_info in files_to_import:
+		var file_path = file_info.path
+		var category = file_info.category
+		
+		print("  导入文件: ", file_path)
+		var result = import_document(file_path, category)
+		if result.success:
+			print("  ✅ 导入成功")
+		else:
+			print("  ❌ 导入失败: ", result.error)
+
+## 递归扫描目录查找术语文件
+func _scan_directory_for_terms(dir_path: String, files_array: Array):
+	var dir = DirAccess.open(dir_path)
+	if not dir:
+		return
+	
+	dir.list_dir_begin()
+	var file_name = dir.get_next()
+	
+	while file_name != "":
+		if file_name.begins_with("."):
+			file_name = dir.get_next()
+			continue
+		
+		var full_path = dir_path + "/" + file_name
+		
+		if dir.current_is_dir():
+			# 递归扫描子目录
+			_scan_directory_for_terms(full_path, files_array)
+		else:
+			# 检查是否是支持的术语文件
+			var extension = file_name.get_extension().to_lower()
+			if extension in ["txt", "csv", "json"]:
+				var category = "game_terms"
+				
+				# 根据路径确定分类
+				if "technical" in dir_path.to_lower():
+					category = "technical_docs"
+				elif "style" in dir_path.to_lower():
+					category = "style_guides"
+				
+				files_array.append({
+					"path": full_path,
+					"category": category
+				})
+		
+		file_name = dir.get_next()
 
 ## 更新路径配置
 func _update_paths():
@@ -142,7 +210,17 @@ func _parse_json_terms(content: String) -> Array:
 	
 	var data = json.data
 	if data is Dictionary and data.has("terms"):
-		return data.terms
+		var terms_data = data.terms
+		
+		# 如果是Dictionary格式（缓存文件），转换为Array
+		if terms_data is Dictionary:
+			var terms_array = []
+			for key in terms_data.keys():
+				terms_array.append(terms_data[key])
+			return terms_array
+		# 如果是Array格式（原始文件），直接返回
+		elif terms_data is Array:
+			return terms_data
 	elif data is Array:
 		return data
 	
@@ -153,24 +231,67 @@ func _parse_txt_terms(content: String) -> Array:
 	var terms = []
 	var lines = content.split("\n")
 	
-	# 简单格式：source = target
+	# 支持两种格式：
+	# 1. 简单格式：source = target
+	# 2. 多语言格式：source = {"en": "英文", "ja": "日文", "ru": "俄文", "zh-TW": "繁体中文"}
 	for line in lines:
 		line = line.strip_edges()
 		if line.is_empty() or line.begins_with("#"):
 			continue
 		
-		var parts = line.split("=")
+		var parts = line.split("=", false, 1)  # 只分割第一个等号
 		if parts.size() == 2:
+			var source_text = parts[0].strip_edges()
+			var target_text = parts[1].strip_edges()
+			
 			var term = {
-				"source": parts[0].strip_edges(),
-				"target": {"zh": parts[1].strip_edges()},
+				"source": source_text,
+				"target": {},
 				"context": [],
 				"confidence": 0.8,
 				"frequency": 1
 			}
+			
+			# 检查是否是JSON格式的多语言翻译
+			if target_text.begins_with("{") and target_text.ends_with("}"):
+				# 解析JSON格式的多语言翻译
+				var json = JSON.new()
+				var parse_result = json.parse(target_text)
+				
+				if parse_result == OK and json.data is Dictionary:
+					term.target = json.data
+					print("✅ 解析多语言术语: ", source_text, " -> ", json.data)
+				else:
+					print("❌ JSON解析失败，使用简单格式: ", target_text)
+					# 如果JSON解析失败，回退到简单格式
+					var target_lang = _detect_language(target_text)
+					term.target[target_lang] = target_text
+			else:
+				# 简单格式：智能检测目标语言
+				var target_lang = _detect_language(target_text)
+				term.target[target_lang] = target_text
+			
 			terms.append(term)
 	
 	return terms
+
+## 简单的语言检测函数
+func _detect_language(text: String) -> String:
+	# 检测是否包含中文字符
+	var has_chinese = false
+	for i in range(text.length()):
+		var char_code = text.unicode_at(i)
+		# 中文字符范围：0x4E00-0x9FFF
+		if char_code >= 0x4E00 and char_code <= 0x9FFF:
+			has_chinese = true
+			break
+	
+	# 如果包含中文，返回中文代码
+	if has_chinese:
+		return "zh"
+	
+	# 否则假设是英文
+	return "en"
 
 ## 保存术语到知识库
 func _save_terms_to_kb(file_path: String, terms: Array, category: String) -> Dictionary:
@@ -274,13 +395,21 @@ func _calculate_similarity(str1: String, str2: String) -> float:
 
 ## 为翻译增强提示
 func enhance_prompt(source_text: String, source_lang: String, target_lang: String, base_prompt: String) -> String:
+	print("=== 知识库增强提示词调试 ===")
+	print("源文本: ", source_text)
+	print("源语言: ", source_lang)
+	print("目标语言: ", target_lang)
+	
 	# 检查知识库是否启用
 	if not _config_manager or not _config_manager.is_knowledge_base_enabled():
+		print("❌ 知识库未启用，返回原始提示词")
 		return base_prompt
 	
 	var search_results = search_terms(source_text, 3)
+	print("搜索结果数量: ", search_results.size())
 	
 	if search_results.is_empty():
+		print("❌ 没有找到匹配的术语，返回原始提示词")
 		return base_prompt
 	
 	var enhancement = "\n\n参考术语库："
@@ -288,19 +417,33 @@ func enhance_prompt(source_text: String, source_lang: String, target_lang: Strin
 	
 	for result in search_results:
 		var term = result.term
+		print("检查术语: ", term.source, " -> ", term.target)
 		if term.target.has(target_lang):
 			enhancement += "\n- \"" + term.source + "\" → \"" + term.target[target_lang] + "\""
 			has_enhancement = true
+			print("✅ 添加术语: ", term.source, " -> ", term.target[target_lang])
+		else:
+			print("❌ 术语没有目标语言翻译: ", target_lang)
 	
 	if has_enhancement:
 		enhancement += "\n请参考上述术语保持翻译一致性。"
-		return base_prompt + enhancement
+		var enhanced_prompt = base_prompt + enhancement
+		print("✅ 增强后的提示词:")
+		print("原始提示词: ", base_prompt)
+		print("增强部分: ", enhancement)
+		print("完整提示词: ", enhanced_prompt)
+		print("=============================")
+		return enhanced_prompt
 	
+	print("❌ 没有可用的术语增强，返回原始提示词")
+	print("=============================")
 	return base_prompt
 
-## 加载缓存
+## 加载缓存（带文件变化检测）
 func _load_cache():
 	var cache_file = _cache_dir + "term_cache.json"
+	var should_reload = false
+	
 	if FileAccess.file_exists(cache_file):
 		var file = FileAccess.open(cache_file, FileAccess.READ)
 		if file:
@@ -309,9 +452,28 @@ func _load_cache():
 			file.close()
 			
 			if parse_result == OK and json.data is Dictionary:
-				_term_cache = json.data.get("terms", {})
-				_hot_terms = json.data.get("hot_terms", {})
-				print("📋 已加载缓存: ", _term_cache.size(), " 个术语")
+				var cache_data = json.data
+				_term_cache = cache_data.get("terms", {})
+				_hot_terms = cache_data.get("hot_terms", {})
+				
+				# 检查文件是否有变化
+				var cached_file_info = cache_data.get("file_info", {})
+				var current_file_info = _get_files_modification_info()
+				
+				should_reload = _has_files_changed(cached_file_info, current_file_info)
+				
+				if should_reload:
+					print("🔄 检测到术语文件变化，重新加载...")
+					_term_cache.clear()
+					_hot_terms.clear()
+				else:
+					print("📋 已加载缓存: ", _term_cache.size(), " 个术语")
+	else:
+		should_reload = true
+	
+	# 如果需要重新加载，自动导入文件
+	if should_reload:
+		_auto_import_existing_files()
 
 ## 加载上下文规则
 func _load_context_rules():
@@ -331,7 +493,8 @@ func _save_index():
 	var index_data = {
 		"terms": _term_cache,
 		"hot_terms": _hot_terms,
-		"last_updated": Time.get_datetime_string_from_system()
+		"last_updated": Time.get_datetime_string_from_system(),
+		"file_info": _get_files_modification_info()
 	}
 	
 	var file = FileAccess.open(_cache_dir + "term_cache.json", FileAccess.WRITE)
@@ -500,4 +663,57 @@ func validate_path(path: String) -> Dictionary:
 		result.has_data = true
 	
 	result.valid = true
-	return result 
+	return result
+
+## 获取所有术语文件的修改信息
+func _get_files_modification_info() -> Dictionary:
+	var file_info = {}
+	var files_to_check = []
+	
+	# 扫描所有术语文件
+	_scan_directory_for_terms(_kb_root_dir, files_to_check)
+	
+	for file_data in files_to_check:
+		var file_path = file_data.path
+		if FileAccess.file_exists(file_path):
+			# 获取文件修改时间和大小
+			var modified_time = FileAccess.get_modified_time(file_path)
+			var file_access = FileAccess.open(file_path, FileAccess.READ)
+			var file_size = 0
+			if file_access:
+				file_size = file_access.get_length()
+				file_access.close()
+			
+			# 使用相对路径作为key，保持一致性
+			var relative_path = file_path.replace(_kb_root_dir, "data/knowledge_base/")
+			file_info[relative_path] = {
+				"modified_time": modified_time,
+				"size": file_size
+			}
+	
+	return file_info
+
+## 检查文件是否有变化
+func _has_files_changed(cached_info: Dictionary, current_info: Dictionary) -> bool:
+	# 检查文件数量是否变化
+	if cached_info.size() != current_info.size():
+		return true
+	
+	# 检查每个文件的修改时间和大小
+	for file_path in current_info.keys():
+		if not cached_info.has(file_path):
+			return true  # 新文件
+		
+		var cached_file = cached_info[file_path]
+		var current_file = current_info[file_path]
+		
+		if cached_file.modified_time != current_file.modified_time or \
+		   cached_file.size != current_file.size:
+			return true  # 文件已修改
+	
+	# 检查是否有文件被删除
+	for file_path in cached_info.keys():
+		if not current_info.has(file_path):
+			return true  # 文件被删除
+	
+	return false

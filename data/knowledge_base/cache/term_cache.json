@@ -1,0 +1,532 @@
+{
+	"file_info": {
+		"data/knowledge_base//cache/term_cache.json": {
+			"modified_time": 1754829187,
+			"size": 11787
+		},
+		"data/knowledge_base//documents/game_terms/term_cache.json": {
+			"modified_time": 1754829187,
+			"size": 9971
+		},
+		"data/knowledge_base//documents/game_terms/翻译相关.json": {
+			"modified_time": 1754829187,
+			"size": 9971
+		},
+		"data/knowledge_base//翻译相关.txt": {
+			"modified_time": 1754829037,
+			"size": 5533
+		}
+	},
+	"hot_terms": {
+		"一键翻译": 4,
+		"上下文翻译": 4,
+		"专业术语": 4,
+		"人工翻译": 4,
+		"传奇武器": 4,
+		"保存进度": 4,
+		"加载存档": 4,
+		"史诗任务": 4,
+		"多语言支持": 4,
+		"实时翻译": 4,
+		"开始游戏": 4,
+		"批量翻译": 4,
+		"技能树": 4,
+		"文件监控": 4,
+		"文本提取": 4,
+		"时空裂隙": 4,
+		"智能翻译": 4,
+		"本地化": 4,
+		"术语库": 4,
+		"机器翻译": 4,
+		"游戏内容": 4,
+		"独游": 4,
+		"生命值": 4,
+		"神秘法师": 4,
+		"经验值": 4,
+		"缓存更新": 4,
+		"翻译准确性": 4,
+		"翻译工具": 4,
+		"翻译引擎": 4,
+		"翻译记忆": 4,
+		"翻译质量": 4,
+		"自动检测": 4,
+		"自然语言处理": 4,
+		"装备强化": 4,
+		"设置选项": 4,
+		"语言模型": 4,
+		"远古遗迹": 4,
+		"退出游戏": 4,
+		"魔法值": 4
+	},
+	"last_updated": "2025-08-10T20:33:07",
+	"terms": {
+		"一键翻译": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "一键翻译",
+			"target": {
+				"en": "One-Click Translation2222222",
+				"ja": "ワンクリック翻訳",
+				"ru": "Перевод в один клик",
+				"zh-TW": "一鍵翻譯"
+			}
+		},
+		"上下文翻译": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "上下文翻译",
+			"target": {
+				"en": "Contextual Translation",
+				"ja": "文脈翻訳",
+				"ru": "Контекстный перевод",
+				"zh-TW": "上下文翻譯"
+			}
+		},
+		"专业术语": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "专业术语",
+			"target": {
+				"en": "Professional Terminology",
+				"ja": "専門用語",
+				"ru": "Профессиональная терминология",
+				"zh-TW": "專業術語"
+			}
+		},
+		"人工翻译": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "人工翻译",
+			"target": {
+				"en": "Human Translation",
+				"ja": "人間翻訳",
+				"ru": "Человеческий перевод",
+				"zh-TW": "人工翻譯"
+			}
+		},
+		"传奇武器": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "传奇武器",
+			"target": {
+				"en": "Legendary Weapon",
+				"ja": "伝説の武器",
+				"ru": "Легендарное оружие",
+				"zh-TW": "傳奇武器"
+			}
+		},
+		"保存进度": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "保存进度",
+			"target": {
+				"en": "Save Progress",
+				"ja": "進行状況保存",
+				"ru": "Сохранить прогресс",
+				"zh-TW": "儲存進度"
+			}
+		},
+		"加载存档": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "加载存档",
+			"target": {
+				"en": "Load Save",
+				"ja": "セーブデータ読み込み",
+				"ru": "Загрузить сохранение",
+				"zh-TW": "載入存檔"
+			}
+		},
+		"史诗任务": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "史诗任务",
+			"target": {
+				"en": "Epic Quest",
+				"ja": "エピッククエスト",
+				"ru": "Эпическое задание",
+				"zh-TW": "史詩任務"
+			}
+		},
+		"多语言支持": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "多语言支持",
+			"target": {
+				"en": "Multi-language Support",
+				"ja": "多言語サポート",
+				"ru": "Многоязычная поддержка",
+				"zh-TW": "多語言支援"
+			}
+		},
+		"实时翻译": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "实时翻译",
+			"target": {
+				"en": "Real-time Translation",
+				"ja": "リアルタイム翻訳",
+				"ru": "Перевод в реальном времени",
+				"zh-TW": "即時翻譯"
+			}
+		},
+		"开始游戏": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "开始游戏",
+			"target": {
+				"en": "Start Game",
+				"ja": "ゲーム開始",
+				"ru": "Начать игру",
+				"zh-TW": "開始遊戲"
+			}
+		},
+		"批量翻译": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "批量翻译",
+			"target": {
+				"en": "Batch Translation",
+				"ja": "バッチ翻訳",
+				"ru": "Пакетный перевод",
+				"zh-TW": "批量翻譯"
+			}
+		},
+		"技能树": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "技能树",
+			"target": {
+				"en": "Skill Tree",
+				"ja": "スキルツリー",
+				"ru": "Дерево навыков",
+				"zh-TW": "技能樹"
+			}
+		},
+		"文件监控": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "文件监控",
+			"target": {
+				"en": "File Monitoring",
+				"ja": "ファイル監視",
+				"ru": "Мониторинг файлов",
+				"zh-TW": "檔案監控"
+			}
+		},
+		"文本提取": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "文本提取",
+			"target": {
+				"en": "Text Extraction",
+				"ja": "テキスト抽出",
+				"ru": "Извлечение текста",
+				"zh-TW": "文本提取"
+			}
+		},
+		"时空裂隙": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "时空裂隙",
+			"target": {
+				"en": "Temporal Rift",
+				"ja": "時空の裂け目",
+				"ru": "Временной разлом",
+				"zh-TW": "時空裂隙"
+			}
+		},
+		"智能翻译": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "智能翻译",
+			"target": {
+				"en": "Smart Translation",
+				"ja": "スマート翻訳",
+				"ru": "Умный перевод",
+				"zh-TW": "智慧翻譯"
+			}
+		},
+		"本地化": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "本地化",
+			"target": {
+				"en": "Localization",
+				"ja": "ローカライゼーション",
+				"ru": "Локализация",
+				"zh-TW": "本地化"
+			}
+		},
+		"术语库": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "术语库",
+			"target": {
+				"en": "Terminology Database",
+				"ja": "用語データベース",
+				"ru": "База терминов",
+				"zh-TW": "術語庫"
+			}
+		},
+		"机器翻译": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "机器翻译",
+			"target": {
+				"en": "Machine Translation",
+				"ja": "機械翻訳",
+				"ru": "Машинный перевод",
+				"zh-TW": "機器翻譯"
+			}
+		},
+		"游戏内容": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "游戏内容",
+			"target": {
+				"en": "Game Content",
+				"ja": "ゲームコンテンツ",
+				"ru": "Игровой контент",
+				"zh-TW": "遊戲內容"
+			}
+		},
+		"独游": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "独游",
+			"target": {
+				"en": "Indie Game",
+				"ja": "インディーゲーム",
+				"ru": "Инди-игра",
+				"zh-TW": "獨立遊戲"
+			}
+		},
+		"生命值": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "生命值",
+			"target": {
+				"en": "Health Points",
+				"ja": "ヒットポイント",
+				"ru": "Очки здоровья",
+				"zh-TW": "生命值"
+			}
+		},
+		"神秘法师": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "神秘法师",
+			"target": {
+				"en": "Arcane Wizard",
+				"ja": "神秘の魔法使い",
+				"ru": "Тайный волшебник",
+				"zh-TW": "神秘法師"
+			}
+		},
+		"经验值": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "经验值",
+			"target": {
+				"en": "Experience Points",
+				"ja": "経験値",
+				"ru": "Очки опыта",
+				"zh-TW": "經驗值"
+			}
+		},
+		"缓存更新": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "缓存更新",
+			"target": {
+				"en": "Cache Update",
+				"ja": "キャッシュ更新",
+				"ru": "Обновление кэша",
+				"zh-TW": "快取更新"
+			}
+		},
+		"翻译准确性": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "翻译准确性",
+			"target": {
+				"en": "Translation Accuracy",
+				"ja": "翻訳精度",
+				"ru": "Точность перевода",
+				"zh-TW": "翻譯準確性"
+			}
+		},
+		"翻译工具": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "翻译工具",
+			"target": {
+				"en": "Translation Tool",
+				"ja": "翻訳ツール",
+				"ru": "Инструмент перевода",
+				"zh-TW": "翻譯工具"
+			}
+		},
+		"翻译引擎": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "翻译引擎",
+			"target": {
+				"en": "Translation Engine",
+				"ja": "翻訳エンジン",
+				"ru": "Движок перевода",
+				"zh-TW": "翻譯引擎"
+			}
+		},
+		"翻译记忆": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "翻译记忆",
+			"target": {
+				"en": "Translation Memory",
+				"ja": "翻訳メモリ",
+				"ru": "Память переводов",
+				"zh-TW": "翻譯記憶"
+			}
+		},
+		"翻译质量": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "翻译质量",
+			"target": {
+				"en": "Translation Quality",
+				"ja": "翻訳品質",
+				"ru": "Качество перевода",
+				"zh-TW": "翻譯品質"
+			}
+		},
+		"自动检测": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "自动检测",
+			"target": {
+				"en": "Auto Detection",
+				"ja": "自動検出",
+				"ru": "Автоматическое обнаружение",
+				"zh-TW": "自動檢測"
+			}
+		},
+		"自然语言处理": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "自然语言处理",
+			"target": {
+				"en": "Natural Language Processing",
+				"ja": "自然言語処理",
+				"ru": "Обработка естественного языка",
+				"zh-TW": "自然語言處理"
+			}
+		},
+		"装备强化": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "装备强化",
+			"target": {
+				"en": "Equipment Enhancement",
+				"ja": "装備強化",
+				"ru": "Улучшение снаряжения",
+				"zh-TW": "裝備強化"
+			}
+		},
+		"设置选项": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "设置选项",
+			"target": {
+				"en": "Settings",
+				"ja": "設定",
+				"ru": "Настройки",
+				"zh-TW": "設定選項"
+			}
+		},
+		"语言模型": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "语言模型",
+			"target": {
+				"en": "Language Model",
+				"ja": "言語モデル",
+				"ru": "Языковая модель",
+				"zh-TW": "語言模型"
+			}
+		},
+		"远古遗迹": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "远古遗迹",
+			"target": {
+				"en": "Ancient Ruins",
+				"ja": "古代遺跡",
+				"ru": "Древние руины",
+				"zh-TW": "遠古遺跡"
+			}
+		},
+		"退出游戏": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "退出游戏",
+			"target": {
+				"en": "Exit Game",
+				"ja": "ゲーム終了",
+				"ru": "Выйти из игры",
+				"zh-TW": "退出遊戲"
+			}
+		},
+		"魔法值": {
+			"confidence": 0.8,
+			"context": [],
+			"frequency": 1,
+			"source": "魔法值",
+			"target": {
+				"en": "Mana Points",
+				"ja": "マナポイント",
+				"ru": "Очки маны",
+				"zh-TW": "魔法值"
+			}
+		}
+	}
+}

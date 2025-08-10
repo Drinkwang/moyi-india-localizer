@@ -20,6 +20,7 @@ signal translation_cancelled()  # 新增：翻译取消
 var ai_service_manager: AIServiceManager
 var config_manager: ConfigManager
 var cache_manager: CacheManager
+var knowledge_base_manager: KnowledgeBaseManager
 
 # 翻译状态管理
 enum TranslationState {
@@ -36,6 +37,9 @@ func _init():
 	ai_service_manager = AIServiceManager.new()
 	config_manager = ConfigManager.new()
 	cache_manager = CacheManager.new()
+	knowledge_base_manager = KnowledgeBaseManager.new()
+	# 初始化知识库管理器，传递配置管理器实例
+	knowledge_base_manager.initialize(config_manager)
 
 ## 翻译单个文本
 func translate_text(text: String, source_lang: String, target_lang: String, service_name: String = "") -> Dictionary:
@@ -58,8 +62,8 @@ func translate_text(text: String, source_lang: String, target_lang: String, serv
 	if not service:
 		return {"success": false, "error": "AI服务不可用"}
 	
-	# 执行翻译
-	var result = await service.translate(text, source_lang, target_lang)
+	# 执行翻译（传递知识库管理器）
+	var result = await service.translate_with_knowledge_base(text, source_lang, target_lang, knowledge_base_manager)
 	
 	if result.success:
 		# 缓存结果（仅在增量模式下）
@@ -92,8 +96,8 @@ func translate_text_with_template(text: String, source_lang: String, target_lang
 	if not service:
 		return {"success": false, "error": "AI服务不可用"}
 	
-	# 执行翻译（传递模板名称）
-	var result = await service.translate_with_template(text, source_lang, target_lang, template_name)
+	# 执行翻译（传递模板名称和知识库管理器）
+	var result = await service.translate_with_template_and_knowledge_base(text, source_lang, target_lang, template_name, knowledge_base_manager)
 	
 	if result.success:
 		# 缓存结果（仅在增量模式下）

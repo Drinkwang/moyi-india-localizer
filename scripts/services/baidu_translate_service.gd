@@ -117,4 +117,19 @@ func _parse_translation_response(data: Dictionary) -> Dictionary:
 		return {"success": false, "error": "响应内容错误"}
 	
 	var translated_text = result.dst.strip_edges()
-	return {"success": true, "translated_text": translated_text} 
+	return {"success": true, "translated_text": translated_text}
+
+## 使用知识库增强翻译文本
+func translate_with_knowledge_base(text: String, source_lang: String, target_lang: String, knowledge_base_manager: KnowledgeBaseManager) -> Dictionary:
+	# 百度翻译API不支持自定义提示词，直接调用原始翻译方法
+	return await translate(text, source_lang, target_lang)
+
+## 使用指定模板翻译文本
+func translate_with_template(text: String, source_lang: String, target_lang: String, template_name: String = "") -> Dictionary:
+	# 百度翻译API不支持自定义提示词，直接调用原始翻译方法
+	return await translate(text, source_lang, target_lang)
+
+## 使用模板和知识库增强翻译文本
+func translate_with_template_and_knowledge_base(text: String, source_lang: String, target_lang: String, template_name: String = "", knowledge_base_manager: KnowledgeBaseManager = null) -> Dictionary:
+	# 百度翻译API不支持自定义提示词，直接调用原始翻译方法
+	return await translate(text, source_lang, target_lang)

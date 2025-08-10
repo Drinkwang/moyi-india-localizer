@@ -30,6 +30,43 @@ func translate(text: String, source_lang: String, target_lang: String) -> Dictio
 	# 使用默认模板
 	return await translate_with_template(text, source_lang, target_lang, "")
 
+## 使用知识库增强翻译文本
+func translate_with_knowledge_base(text: String, source_lang: String, target_lang: String, knowledge_base_manager: KnowledgeBaseManager) -> Dictionary:
+	return await translate_with_template_and_knowledge_base(text, source_lang, target_lang, "", knowledge_base_manager)
+
+## 使用模板和知识库增强翻译文本
+func translate_with_template_and_knowledge_base(text: String, source_lang: String, target_lang: String, template_name: String = "", knowledge_base_manager: KnowledgeBaseManager = null) -> Dictionary:
+	if not _validate_config():
+		return {"success": false, "error": "配置无效"}
+	
+	# 获取专业翻译提示词，传递模板名称和知识库管理器
+	var prompts = _get_translation_prompt(text, source_lang, target_lang, template_name, knowledge_base_manager)
+	
+	# 构建请求数据
+	var request_data = {
+		"model": model,
+		"messages": [
+			{
+				"role": "system",
+				"content": prompts.system
+			},
+			{
+				"role": "user",
+				"content": prompts.user
+			}
+		],
+		"max_tokens": max_tokens,
+		"temperature": temperature
+	}
+	
+	# 发送请求
+	var response = await _send_request(request_data)
+	
+	if response.success:
+		return _parse_translation_response(response.data)
+	else:
+		return {"success": false, "error": response.error}
+
 ## 使用指定模板翻译文本
 func translate_with_template(text: String, source_lang: String, target_lang: String, template_name: String = "") -> Dictionary:
 	if not _validate_config():
@@ -247,4 +284,4 @@ func _parse_translation_response(data: Dictionary) -> Dictionary:
 		return {"success": false, "error": "响应内容错误"}
 	
 	var translated_text = choice.message.content.strip_edges()
-	return {"success": true, "translated_text": translated_text} 
+	return {"success": true, "translated_text": translated_text}

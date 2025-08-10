@@ -1,49 +1,56 @@
 {
-  "app": {
-	"name": "AI翻译游戏开发工具",
-	"version": "1.0.0",
-	"language": "zh_CN",
-	"theme": "default",
-	"author": "鹏砚 (Drinkwang)",
-	"homepage": "https://space.bilibili.com/13061595",
-	"repository": "https://github.com/Drinkwang",
-	"development": "人机协作 (与Claude AI共同开发)",
-	"license": "MIT"
-  },
-  "ui": {
-	"window_size": {
-	  "width": 1200,
-	  "height": 800
+	"app": {
+		"author": "鹏砚 (Drinkwang)",
+		"development": "人机协作 (与Claude AI共同开发)",
+		"homepage": "https://space.bilibili.com/13061595",
+		"language": "zh_CN",
+		"license": "MIT",
+		"name": "AI翻译游戏开发工具",
+		"repository": "https://github.com/Drinkwang",
+		"theme": "default",
+		"version": "1.0.0"
 	},
-	"min_window_size": {
-	  "width": 800,
-	  "height": 600
+	"file_handling": {
+		"backup_on_translate": true,
+		"max_file_size": 10485760,
+		"supported_formats": [
+			".txt",
+			".json",
+			".csv",
+			".gd",
+			".cs",
+			".lua"
+		]
 	},
-	"auto_save": true,
-	"auto_save_interval": 300
-  },
-  "translation": {
-	"source_language": "en",
-	"target_language": "zh",
-	"batch_size": 10,
-	"enable_cache": true,
-	"preserve_formatting": true
-  },
-  "file_handling": {
-	"supported_formats": [".txt", ".json", ".csv", ".gd", ".cs", ".lua"],
-	"max_file_size": 10485760,
-	"backup_on_translate": true
-  },
-  "logging": {
-	"level": "INFO",
-	"max_log_size": 5242880,
-	"max_log_files": 5
-  },
-  "knowledge_base": {
-	"enabled": false,
-	"root_path": "data/knowledge_base/",
-	"auto_backup": true,
-	"max_cache_size": 1000,
-	"similarity_threshold": 0.6
-  }
-} 
+	"knowledge_base": {
+		"auto_backup": true,
+		"enabled": true,
+		"max_cache_size": 1000,
+		"root_path": "data/knowledge_base/",
+		"similarity_threshold": 0.6
+	},
+	"logging": {
+		"level": "INFO",
+		"max_log_files": 5,
+		"max_log_size": 5242880
+	},
+	"translation": {
+		"batch_size": 10,
+		"enable_cache": true,
+		"preserve_formatting": true,
+		"source_language": "en",
+		"target_language": "zh"
+	},
+	"ui": {
+		"auto_save": true,
+		"auto_save_interval": 300,
+		"min_window_size": {
+			"height": 600,
+			"width": 800
+		},
+		"window_size": {
+			"height": 800,
+			"width": 1200
+		}
+	}
+}

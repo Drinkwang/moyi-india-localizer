@@ -57,6 +57,74 @@ func translate(text: String, source_lang: String, target_lang: String) -> Dictio
 	else:
 		return {"success": false, "error": response.error}
 
+## 使用知识库增强翻译文本
+func translate_with_knowledge_base(text: String, source_lang: String, target_lang: String, knowledge_base_manager: KnowledgeBaseManager) -> Dictionary:
+	return await translate_with_template_and_knowledge_base(text, source_lang, target_lang, "csv_batch", knowledge_base_manager)
+
+## 使用指定模板翻译文本
+func translate_with_template(text: String, source_lang: String, target_lang: String, template_name: String = "") -> Dictionary:
+	if not _validate_config():
+		return {"success": false, "error": "配置无效"}
+	
+	# 获取专业翻译提示词，传递模板名称
+	var prompts = _get_translation_prompt(text, source_lang, target_lang, template_name)
+	
+	# Claude API将system message合并到user content中
+	var full_prompt = prompts.system + "\n\n" + prompts.user
+	
+	# 构建请求数据
+	var request_data = {
+		"model": model,
+		"max_tokens": max_tokens,
+		"temperature": temperature,
+		"messages": [
+			{
+				"role": "user",
+				"content": full_prompt
+			}
+		]
+	}
+	
+	# 发送请求
+	var response = await _send_request(request_data)
+	
+	if response.success:
+		return _parse_translation_response(response.data)
+	else:
+		return {"success": false, "error": response.error}
+
+## 使用模板和知识库增强翻译文本
+func translate_with_template_and_knowledge_base(text: String, source_lang: String, target_lang: String, template_name: String = "", knowledge_base_manager: KnowledgeBaseManager = null) -> Dictionary:
+	if not _validate_config():
+		return {"success": false, "error": "配置无效"}
+	
+	# 获取专业翻译提示词，传递模板名称和知识库管理器
+	var prompts = _get_translation_prompt(text, source_lang, target_lang, template_name, knowledge_base_manager)
+	
+	# Claude API将system message合并到user content中
+	var full_prompt = prompts.system + "\n\n" + prompts.user
+	
+	# 构建请求数据
+	var request_data = {
+		"model": model,
+		"max_tokens": max_tokens,
+		"temperature": temperature,
+		"messages": [
+			{
+				"role": "user",
+				"content": full_prompt
+			}
+		]
+	}
+	
+	# 发送请求
+	var response = await _send_request(request_data)
+	
+	if response.success:
+		return _parse_translation_response(response.data)
+	else:
+		return {"success": false, "error": response.error}
+
 ## 测试连接
 func test_connection() -> Dictionary:
 	if not _validate_config():
@@ -113,4 +181,4 @@ func _parse_translation_response(data: Dictionary) -> Dictionary:
 		return {"success": false, "error": "响应内容错误"}
 	
 	var translated_text = content.text.strip_edges()
-	return {"success": true, "translated_text": translated_text} 
+	return {"success": true, "translated_text": translated_text}

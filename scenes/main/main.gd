@@ -152,6 +152,9 @@ func _ready():
 	_setup_ui()
 	_connect_signals()
 	intLan()
+	
+	# 添加测试翻译功能
+	_test_translation_after_init()
 
 ## 初始化服务
 func _initialize_services():
@@ -2235,10 +2238,14 @@ func _on_clear_cache_confirmed():
 func _on_kb_enabled_toggled(enabled: bool):
 	_update_kb_ui_state(enabled)
 	
+	# 立即保存启用状态
+	if config_manager:
+		config_manager.set_knowledge_base_enabled(enabled)
+	
 	if enabled:
-		_show_status("知识库功能已启用", false)
+		_show_status("✅ 知识库功能已启用并保存", false)
 	else:
-		_show_status("知识库功能已禁用", false)
+		_show_status("✅ 知识库功能已禁用并保存", false)
 
 ## 加载知识库配置到对话框
 func _load_kb_config():
@@ -2353,8 +2360,7 @@ func _update_kb_ui_state(enabled: bool):
 	
 	# 控制按钮
 	if apply_button:
-		if not enabled:
-			apply_button.disabled = true
+		apply_button.disabled = not enabled
 		apply_button.modulate.a = 1.0 if enabled else 0.5
 	if reset_kb_button:
 		reset_kb_button.disabled = not enabled
@@ -2934,3 +2940,95 @@ func _lanchange_button_down():
 		lanbtn.text="en"
 	else:
 		lanbtn.text="zh"
+
+## 测试翻译功能
+func _test_translation_after_init():
+	print("=== 开始测试翻译功能 ===")
+	
+	# 等待几帧确保所有服务都已初始化
+	await get_tree().process_frame
+	await get_tree().process_frame
+	await get_tree().process_frame
+	
+	if not translation_service:
+		print("❌ 错误：翻译服务未初始化")
+		return
+	
+	# 获取知识库管理器
+	var knowledge_base_manager = translation_service.knowledge_base_manager
+	if not knowledge_base_manager:
+		print("❌ 错误：知识库管理器未初始化")
+		return
+	
+	print("✅ 知识库状态：", "启用" if config_manager.is_knowledge_base_enabled() else "禁用")
+	
+	# 测试搜索"一键翻译"术语
+	print("\n=== 测试术语搜索 ===")
+	var search_results = knowledge_base_manager.search_terms("一键翻译", 5)
+	print("🔍 搜索'一键翻译'的结果数量：", search_results.size())
+	
+	for i in range(search_results.size()):
+		var result = search_results[i]
+		print("结果 %d:" % (i + 1))
+		print("  匹配类型：%s" % result.get("match_type", "unknown"))
+		print("  置信度：%.2f" % result.get("confidence", 0.0))
+		
+		var term = result.get("term", {})
+		print("  术语源文本：%s" % term.get("source", ""))
+		
+		var target = term.get("target", {})
+		if target.has("en"):
+			print("  英文翻译：%s" % target.en)
+		else:
+			print("  ❌ 未找到英文翻译")
+	
+	# 测试翻译功能
+	print("\n=== 测试翻译功能 ===")
+	var source_text = "一键翻译"
+	var source_lang = "zh"
+	var target_lang = "ja"  # 改为测试日文翻译
+	var service_name = "deepseek"
+	var template_name = "basic"
+	
+	print("📝 准备翻译：'%s' (%s -> %s)" % [source_text, source_lang, target_lang])
+	
+	# 连接翻译完成信号
+	if not translation_service.translation_completed.is_connected(_on_test_translation_completed):
+		translation_service.translation_completed.connect(_on_test_translation_completed)
+	if not translation_service.translation_failed.is_connected(_on_test_translation_failed):
+		translation_service.translation_failed.connect(_on_test_translation_failed)
+	
+	# 执行翻译
+	translation_service.translate_text_with_template(
+		source_text,
+		source_lang,
+		target_lang,
+		service_name,
+		template_name
+	)
+
+## 测试翻译完成回调
+func _on_test_translation_completed(result: Dictionary):
+	print("\n=== 翻译测试完成 ===")
+	print("✅ 原文：%s" % result.get("source_text", ""))
+	print("✅ 译文：%s" % result.get("translated_text", ""))
+	print("✅ 使用的服务：%s" % result.get("service_name", ""))
+	print("✅ 使用的模板：%s" % result.get("template_name", ""))
+	print("✅ 是否使用了知识库：%s" % ("是" if result.get("used_knowledge_base", false) else "否"))
+	
+	# 检查翻译结果是否正确
+	var translated_text = result.get("translated_text", "")
+	if "ワンクリック翻訳" in translated_text:
+		print("🎉 翻译结果正确！包含了知识库中的日文术语")
+	else:
+		print("⚠️ 翻译结果可能不正确，未包含预期的术语")
+		print("   预期包含：ワンクリック翻訳")
+		print("   实际结果：%s" % translated_text)
+	
+	print("========================")
+
+## 测试翻译失败回调
+func _on_test_translation_failed(error_message: String):
+	print("\n=== 翻译测试失败 ===")
+	print("❌ 错误信息：%s" % error_message)
+	print("======================")
